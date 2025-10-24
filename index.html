@@ -1,0 +1,1653 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberStruct: Explorador Interactivo</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- ESTILOS CSS (El Look Futurista) --- */
+        
+        :root {
+            --color-fondo: #0a0a1a;
+            --color-texto: #e0e0ff;
+            --color-neon-azul: #00ffff;
+            --color-neon-magenta: #ff00ff;
+            --color-neon-verde: #00ff00;
+            --color-glow: rgba(0, 255, 255, 0.5);
+            --color-glow-magenta: rgba(255, 0, 255, 0.5);
+            --color-fondo-panel: #1a1a2a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background-color: var(--color-fondo);
+            color: var(--color-texto);
+            display: flex;
+            flex-direction: column; /* Cambiado para las pestañas */
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        h1, h2, h3 {
+            font-family: 'Orbitron', sans-serif;
+            color: var(--color-neon-azul);
+            text-shadow: 0 0 10px var(--color-glow);
+            letter-spacing: 2px;
+        }
+
+        /* --- NAVEGACIÓN POR PESTAÑAS --- */
+        .tab-nav {
+            display: flex;
+            flex-wrap: wrap; /* Para que quepan más pestañas */
+            justify-content: center; /* Centrar pestañas en móvil */
+            margin-bottom: -2px; /* Superponer borde */
+            z-index: 10;
+        }
+
+        .tab-btn {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem; /* Reducido para más pestañas */
+            background: var(--color-fondo-panel);
+            border: 2px solid #444;
+            color: #888;
+            padding: 10px 20px; /* Ajustado */
+            cursor: pointer;
+            border-bottom: none;
+            border-radius: 10px 10px 0 0;
+            transition: all 0.3s ease;
+            margin: 2px;
+        }
+        
+        .tab-btn.active {
+            background: var(--color-fondo-panel);
+            border-color: var(--color-neon-azul);
+            color: var(--color-neon-azul);
+            text-shadow: 0 0 5px var(--color-glow);
+            transform: translateY(2px);
+            border-bottom: 2px solid var(--color-fondo-panel); /* Ocultar borde inferior */
+        }
+        
+        .tab-content {
+            display: none; /* Oculto por defecto */
+            width: 100%;
+        }
+        
+        .tab-content.active {
+            display: block; /* Visible */
+        }
+
+        /* --- Contenedor Principal --- */
+        .container {
+            width: 100%; /* Ajustado para pestañas */
+            max-width: 1400px;
+            background: var(--color-fondo-panel);
+            border: 2px solid var(--color-neon-azul);
+            border-radius: 0 10px 10px 10px; /* Ajustado para pestañas */
+            box-shadow: 0 0 25px var(--color-glow);
+            padding: 25px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        /* Contenedor para pestañas de conceptos */
+        .concept-container {
+             grid-template-columns: 300px 1fr; /* Columna para botones, otra para explicación */
+        }
+
+        /* --- Área de Visualización (Común) --- */
+        .visual-panel {
+            grid-column: 1 / -1; /* Ocupa todo el ancho */
+            border: 1px dashed var(--color-neon-azul);
+            padding: 20px;
+            min-height: 200px;
+            border-radius: 5px;
+        }
+        
+        /* --- Visualización de LISTAS --- */
+        #visualization-area {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            min-height: 100px;
+            padding: 10px;
+            gap: 10px;
+        }
+        
+        .node {
+            display: flex;
+            align-items: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .node-box {
+            background-color: #2a2a4a;
+            border: 2px solid var(--color-neon-magenta);
+            border-radius: 5px;
+            display: flex;
+            box-shadow: 0 0 10px var(--color-glow-magenta);
+            transition: all 0.3s ease;
+        }
+        
+        .node-data {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            padding: 15px 20px;
+            color: var(--color-neon-verde);
+            border-right: 2px solid var(--color-neon-magenta);
+        }
+        
+        .node-next {
+            padding: 15px;
+            background: #111;
+            font-size: 1.2rem;
+            color: #555;
+        }
+
+        .pointer {
+            font-size: 2.5rem;
+            color: var(--color-neon-azul);
+            margin: 0 10px;
+            animation: pulse 1.5s infinite;
+        }
+        
+        .null-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.8rem;
+            color: #888;
+            margin-left: 10px;
+        }
+
+        /* --- Visualización de FILAS (Queues) --- */
+        #fila-visualization-area {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            min-height: 100px;
+            padding: 10px;
+            gap: 10px;
+            border: 2px dashed #444;
+            border-radius: 5px;
+            position: relative;
+        }
+
+        .queue-label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.2rem;
+            color: var(--color-neon-azul);
+            text-shadow: 0 0 5px var(--color-glow);
+            padding: 5px 10px;
+            border: 1px solid var(--color-neon-azul);
+            border-radius: 5px;
+        }
+        
+        .queue-label.front {
+            margin-right: 10px;
+        }
+        
+        .queue-label.rear {
+            margin-left: 10px;
+        }
+        
+        .queue-item {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5rem;
+            padding: 15px 20px;
+            color: var(--color-neon-verde);
+            background-color: #2a2a4a;
+            border: 2px solid var(--color-neon-verde);
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+            transition: all 0.5s ease;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        /* Animaciones Fila */
+        .queue-item-out {
+            animation: fadeOut 0.5s ease forwards;
+        }
+
+        /* Clases de animación JS (Comunes) */
+        .node-highlight, .item-highlight {
+            transform: scale(1.1);
+            background-color: var(--color-neon-azul);
+            border-color: var(--color-texto);
+            box-shadow: 0 0 20px var(--color-glow);
+        }
+        .node-highlight .node-data {
+            color: var(--color-fondo);
+        }
+        
+        .node-found, .item-found {
+            background-color: var(--color-neon-verde);
+            border-color: var(--color-texto);
+        }
+        .node-found .node-data {
+            color: var(--color-fondo);
+        }
+
+        /* --- Paneles de Control e Info (Comunes) --- */
+        .controls-panel, .info-panel {
+            background: rgba(0,0,0,0.2);
+            border: 1px solid #444;
+            border-radius: 5px;
+            padding: 20px;
+        }
+        
+        /* Panel específico para Glosario */
+        .glossary-nav {
+            height: 400px; /* Altura fija */
+            overflow-y: auto; /* Scroll si es necesario */
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-right: 10px; /* Espacio para scrollbar */
+        }
+        
+        .glossary-content {
+             height: 400px; /* Altura fija */
+             overflow-y: auto; /* Scroll si es necesario */
+        }
+        
+        .glossary-btn {
+            width: 100%;
+            text-align: left;
+            border-color: #444;
+            color: #888;
+            font-size: 0.9rem;
+        }
+        .glossary-btn:hover {
+            border-color: var(--color-neon-azul);
+            color: var(--color-neon-azul);
+        }
+        .glossary-btn.active {
+            background: var(--color-neon-azul);
+            color: var(--color-fondo);
+            box-shadow: 0 0 15px var(--color-glow);
+        }
+
+
+        .controls-panel h3 {
+            margin-bottom: 15px;
+        }
+        
+        .control-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        input[type="text"] {
+            flex-grow: 1;
+            background: var(--color-fondo);
+            border: 1px solid var(--color-neon-azul);
+            color: var(--color-texto);
+            padding: 10px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.1rem;
+            border-radius: 3px;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            box-shadow: 0 0 10px var(--color-glow);
+        }
+
+        button {
+            font-family: 'Orbitron', sans-serif;
+            background: transparent;
+            border: 2px solid var(--color-neon-azul);
+            color: var(--color-neon-azul);
+            padding: 10px 15px;
+            cursor: pointer;
+            border-radius: 3px;
+            text-shadow: 0 0 5px var(--color-glow);
+            transition: all 0.3s ease;
+        }
+        button.danger {
+            border-color: var(--color-neon-magenta);
+            color: var(--color-neon-magenta);
+        }
+        button:hover {
+            background: var(--color-neon-azul);
+            color: var(--color-fondo);
+            box-shadow: 0 0 15px var(--color-glow);
+        }
+        button.danger:hover {
+            background: var(--color-neon-magenta);
+            color: var(--color-fondo);
+            box-shadow: 0 0 15px var(--color-glow-magenta);
+        }
+        button:disabled {
+            border-color: #555;
+            color: #555;
+            cursor: not-allowed;
+            background: transparent;
+            text-shadow: none;
+            box-shadow: none;
+        }
+
+        /* --- Panel de Información (Terminal) --- */
+        .console-output {
+            background: #000;
+            border: 1px solid var(--color-neon-verde);
+            height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            font-family: 'Menlo', 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: var(--color-neon-verde);
+            margin-top: 10px;
+            white-space: pre-wrap;
+        }
+        .console-output .log-entry {
+            border-bottom: 1px dashed #2a4a2a;
+            padding-bottom: 5px;
+            margin-bottom: 5px;
+        }
+        .console-output .log-entry::before {
+            content: '> ';
+        }
+        .console-output .log-error {
+            color: var(--color-neon-magenta);
+        }
+
+        /* --- Panel de Explicación (Conceptos) --- */
+        .explanation-panel {
+            background: #000;
+            border: 1px solid var(--color-neon-azul);
+            height: 200px;
+            overflow-y: auto;
+            padding: 15px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-top: 10px;
+        }
+        
+        .explanation-panel.large {
+             height: 400px; /* Para glosario */
+        }
+        
+        .explanation-panel p {
+            margin-bottom: 10px;
+        }
+        .explanation-panel h3 {
+             margin-top: 15px;
+             margin-bottom: 5px;
+             color: var(--color-neon-magenta);
+        }
+        .explanation-panel strong {
+            color: var(--color-neon-azul);
+            font-weight: 700;
+        }
+        .explanation-panel code {
+            font-family: 'Menlo', 'Courier New', monospace;
+            color: var(--color-neon-magenta);
+            background: #222;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        .explanation-panel ul {
+            margin-left: 20px;
+            margin-bottom: 10px;
+        }
+        .explanation-panel li {
+            margin-bottom: 5px;
+        }
+
+        /* --- Animaciones --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(0.8); }
+        }
+        @keyframes pulse {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; text-shadow: 0 0 10px var(--color-glow); }
+            100% { opacity: 0.7; }
+        }
+        
+        
+        /* --- ESTILOS RESPONSIVOS (PARA MÓVILES) --- */
+        /* Esta es la sección que he añadido */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px; /* Menos espacio en los bordes */
+                font-size: 14px; /* Tamaño de letra base más pequeño */
+            }
+            
+            h1 {
+                font-size: 1.6rem; /* Título un poco más pequeño */
+                letter-spacing: 1px;
+            }
+            
+            h2 {
+                font-size: 1.3rem;
+            }
+
+            .container {
+                /* Romper las 2 columnas y apilarlas (1 columna) */
+                grid-template-columns: 1fr; 
+                padding: 15px;
+                gap: 15px; /* Menos espacio entre páneles */
+            }
+            
+            .concept-container {
+                /* Apilar también el glosario */
+                grid-template-columns: 1fr;
+            }
+            
+            .tab-btn {
+                font-size: 0.85rem; /* Letra de pestañas más pequeña */
+                padding: 8px 10px;
+            }
+            
+            .controls-panel, .info-panel {
+                padding: 15px;
+            }
+            
+            /* Hacer que los grupos de botones se apilen si no caben */
+            .control-group {
+                flex-wrap: wrap;
+            }
+
+            /* Ajustar la altura de los paneles del glosario */
+            .glossary-nav,
+            .explanation-panel.large {
+                height: 300px; /* Más bajo para caber en pantalla */
+            }
+
+            /* Reducir texto en nodos para que quepan */
+            .node-data,
+            .queue-item {
+                font-size: 1.2rem;
+                padding: 10px 15px;
+            }
+            
+            .pointer, .null-text {
+                font-size: 1.5rem;
+            }
+            
+            .explanation-panel {
+                font-size: 1rem;
+            }
+        }
+        
+    </style>
+</head>
+<body>
+
+    <nav class="tab-nav">
+        <button class="tab-btn active" data-tab="listas-sim">Listas (Enlazadas)</button>
+        <button class="tab-btn" data-tab="filas-sim">Filas (Enqueue)</button>
+        <button class="tab-btn" data-tab="listas-conceptos">Conceptos: Listas</button>
+        <button class="tab-btn" data-tab="filas-conceptos">Conceptos: Filas</button>
+    </nav>
+
+    <div id="listas-sim-content" class="tab-content active">
+        <div class="container">
+            <header style="grid-column: 1 / -1; text-align: center; margin-bottom: 10px;">
+                <h1>CyberList: Simulador de Listas Enlazadas</h1>
+            </header>
+
+            <div class="visual-panel">
+                <h2>VISUALIZACIÓN DE LA LISTA</h2>
+                <div id="visualization-area">
+                    <span class="null-text">[LISTA VACÍA]</span>
+                </div>
+            </div>
+
+            <div class="controls-panel">
+                <h3>OPERACIONES DE LISTA</h3>
+                <div class="control-group">
+                    <input type="text" id="node-value" placeholder="Introduce un valor...">
+                </div>
+                <div class="control-group" style="flex-wrap: wrap;">
+                    <button id="add-head-btn">Añadir al Inicio (Head)</button>
+                    <button id="add-tail-btn">Añadir al Final (Tail)</button>
+                    <button id="remove-btn" class="danger">Eliminar Valor</button>
+                    <button id="search-btn">Buscar Valor</button>
+                </div>
+                 <div class="control-group" style="margin-top: 20px;">
+                    <button id="clear-btn" class="danger" style="width: 100%;">Limpiar Lista</button>
+                </div>
+            </div>
+
+            <div class="info-panel">
+                <h3>CONSOLA DE OPERACIONES</h3>
+                <div id="console-output" class="console-output">
+                    <div class="log-entry">Bienvenido al Simulador de Listas.</div>
+                </div>
+            </div>
+            
+            <div class="info-panel" style="grid-column: 1 / -1;">
+                <h3>CENTRO DE APRENDIZAJE: ¿Qué está pasando?</h3>
+                <div id="explanation-panel" class="explanation-panel">
+                    <p>Usa los controles para manipular la lista. Aquí aparecerá una explicación de cada operación.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="filas-sim-content" class="tab-content">
+        <div class="container">
+            <header style="grid-column: 1 / -1; text-align: center; margin-bottom: 10px;">
+                <h1>CyberQueue: Simulador de Filas</h1>
+            </header>
+
+            <div class="visual-panel">
+                <h2>VISUALIZACIÓN DE LA FILA (FIFO)</h2>
+                <div id="fila-visualization-area">
+                    <span class="null-text">[FILA VACÍA]</span>
+                </div>
+            </div>
+
+            <div class="controls-panel">
+                <h3>OPERACIONES DE FILA</h3>
+                <div class="control-group">
+                    <input type="text" id="fila-value" placeholder="Introduce un valor...">
+                </div>
+                <div class="control-group" style="flex-wrap: wrap;">
+                    <button id="enqueue-btn">Encolar (Enqueue)</button>
+                    <button id="dequeue-btn" class="danger">Desencolar (Dequeue)</button>
+                </div>
+                 <div class="control-group" style="margin-top: 20px;">
+                    <button id="clear-fila-btn" class="danger" style="width: 100%;">Limpiar Fila</button>
+                </div>
+            </div>
+
+            <div class="info-panel">
+                <h3>CONSOLA DE OPERACIONES</h3>
+                <div id="fila-console-output" class="console-output">
+                    <div class="log-entry">Bienvenido al Simulador de Filas.</div>
+                </div>
+            </div>
+            
+            <div class="info-panel" style="grid-column: 1 / -1;">
+                <h3>CENTRO DE APRENDIZAJE: ¿Qué está pasando?</h3>
+                <div id="fila-explanation-panel" class="explanation-panel">
+                    <p>Usa los controles para manipular la fila. Aquí aparecerá una explicación de cada operación.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="listas-conceptos-content" class="tab-content">
+        <div class="container concept-container">
+            <header style="grid-column: 1 / -1; text-align: center; margin-bottom: 10px;">
+                <h1>Glosario Interactivo: Listas Enlazadas</h1>
+            </header>
+            
+            <div class="info-panel">
+                <h3>Conceptos Clave</h3>
+                <nav id="listas-glossary-nav" class="glossary-nav">
+                    </nav>
+            </div>
+            
+            <div class="info-panel">
+                 <h3>Definición y Aplicación</h3>
+                 <div id="listas-glossary-content" class="explanation-panel large glossary-content">
+                     <p>Haz clic en un concepto de la izquierda para ver su definición, ventajas y casos de uso aquí.</p>
+                 </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="filas-conceptos-content" class="tab-content">
+        <div class="container concept-container">
+            <header style="grid-column: 1 / -1; text-align: center; margin-bottom: 10px;">
+                <h1>Glosario Interactivo: Filas (Queues)</h1>
+            </header>
+            
+            <div class="info-panel">
+                <h3>Conceptos Clave</h3>
+                <nav id="filas-glossary-nav" class="glossary-nav">
+                    </nav>
+            </div>
+            
+            <div class="info-panel">
+                 <h3>Definición y Aplicación</h3>
+                 <div id="filas-glossary-content" class="explanation-panel large glossary-content">
+                     <p>Haz clic en un concepto de la izquierda para ver su definición, ventajas y casos de uso aquí.</p>
+                 </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        /* --- LÓGICA JAVASCRIPT (La Interactividad) --- */
+
+        // Función de utilidad para dormir (para animaciones)
+        const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+        // --- 1. LÓGICA DE PESTAÑAS ---
+        const tabs = document.querySelectorAll('.tab-btn');
+        const contents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const targetId = tab.getAttribute('data-tab');
+                
+                // Actualizar botones
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                // Actualizar contenido
+                contents.forEach(c => {
+                    if (c.id === `${targetId}-content`) {
+                        c.classList.add('active');
+                    } else {
+                        c.classList.remove('active');
+                    }
+                });
+            });
+        });
+
+        // ======================================================
+        // --- 2. LÓGICA DE LISTAS ENLAZADAS (SIMULADOR) ---
+        // ======================================================
+
+        // --- 2.1. Definición de las Estructuras de Datos (Lista) ---
+        class Nodo {
+            constructor(data) {
+                this.data = data;
+                this.next = null;
+            }
+        }
+
+        class ListaEnlazada {
+            constructor() {
+                this.head = null;
+                this.size = 0;
+            }
+
+            addHead(data) {
+                const nuevoNodo = new Nodo(data);
+                nuevoNodo.next = this.head;
+                this.head = nuevoNodo;
+                this.size++;
+            }
+
+            addTail(data) {
+                const nuevoNodo = new Nodo(data);
+                if (this.head === null) {
+                    this.head = nuevoNodo;
+                } else {
+                    let actual = this.head;
+                    while (actual.next !== null) {
+                        actual = actual.next;
+                    }
+                    actual.next = nuevoNodo;
+                }
+                this.size++;
+            }
+
+            remove(data) {
+                if (this.head === null) return false;
+                if (this.head.data === data) {
+                    this.head = this.head.next;
+                    this.size--;
+                    return true;
+                }
+                let actual = this.head;
+                let prev = null;
+                while (actual !== null && actual.data !== data) {
+                    prev = actual;
+                    actual = actual.next;
+                }
+                if (actual === null) return false;
+                prev.next = actual.next;
+                this.size--;
+                return true;
+            }
+
+            search(data) {
+                let actual = this.head;
+                while (actual !== null) {
+                    if (actual.data === data) return actual;
+                    actual = actual.next;
+                }
+                return null;
+            }
+        }
+
+        // --- 2.2. Lógica de la Interfaz (DOM Lista) ---
+        const miLista = new ListaEnlazada();
+        const visArea = document.getElementById('visualization-area');
+        const input = document.getElementById('node-value');
+        const addHeadBtn = document.getElementById('add-head-btn');
+        const addTailBtn = document.getElementById('add-tail-btn');
+        const removeBtn = document.getElementById('remove-btn');
+        const searchBtn = document.getElementById('search-btn');
+        const clearBtn = document.getElementById('clear-btn');
+        const consoleOutput = document.getElementById('console-output');
+        const explanationPanel = document.getElementById('explanation-panel');
+
+        function toggleListButtons(disabled) {
+            addHeadBtn.disabled = disabled;
+            addTailBtn.disabled = disabled;
+            removeBtn.disabled = disabled;
+            searchBtn.disabled = disabled;
+            clearBtn.disabled = disabled;
+        }
+
+        function renderLista() {
+            visArea.innerHTML = '';
+            if (miLista.head === null) {
+                visArea.innerHTML = '<span class="null-text">[LISTA VACÍA]</span>';
+                return;
+            }
+            let actual = miLista.head;
+            let index = 0;
+            while (actual !== null) {
+                const nodeDiv = document.createElement('div');
+                nodeDiv.className = 'node';
+                nodeDiv.innerHTML = `
+                    <div class="node-box" id="node-${index}">
+                        <div class="node-data">${actual.data}</div>
+                        <div class="node-next">[next]</div>
+                    </div>
+                `;
+                visArea.appendChild(nodeDiv);
+                if (actual.next !== null) {
+                    const pointerDiv = document.createElement('div');
+                    pointerDiv.className = 'pointer';
+                    pointerDiv.innerHTML = '→';
+                    visArea.appendChild(pointerDiv);
+                }
+                actual = actual.next;
+                index++;
+            }
+            const nullText = document.createElement('span');
+            nullText.className = 'null-text';
+            nullText.innerHTML = '→ NULL';
+            visArea.appendChild(nullText);
+        }
+
+        function logToConsole(message, type = 'log') {
+            const entry = document.createElement('div');
+            entry.className = type === 'error' ? 'log-entry log-error' : 'log-entry';
+            entry.textContent = message;
+            consoleOutput.appendChild(entry);
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+
+        function updateListExplanation(title, content) {
+            explanationPanel.innerHTML = `<h3>${title}</h3>${content}`;
+        }
+        
+        function getListValor() {
+            const valor = input.value.trim();
+            if (valor === '') {
+                logToConsole('Error: El valor no puede estar vacío.', 'error');
+                updateListExplanation('Error de Entrada', '<p>Debes introducir un valor en la caja de texto para realizar esta operación.</p>');
+                return null;
+            }
+            return valor;
+        }
+
+        addHeadBtn.addEventListener('click', () => {
+            const valor = getListValor();
+            if (valor === null) return;
+            miLista.addHead(valor);
+            renderLista();
+            logToConsole(`Valor "${valor}" añadido al INICIO (Head).`);
+            updateListExplanation(
+                'Operación: Añadir al Inicio (Head)',
+                `<p>Se ha creado un nuevo <strong>Nodo(${valor})</strong>.</p>
+                 <p>1. El puntero <code>next</code> de este nuevo nodo se ha configurado para apuntar al antiguo <code>head</code> (que era ${miLista.head.next ? `Nodo(${miLista.head.next.data})` : 'NULL'}).</p>
+                 <p>2. La variable <code>head</code> de la lista ahora apunta a este nuevo nodo.</p>
+                 <p><strong>Ventaja:</strong> Esta operación es <strong>O(1)</strong>. Es instantánea, no importa el tamaño de la lista.</p>`
+            );
+            input.value = '';
+        });
+
+        addTailBtn.addEventListener('click', async () => {
+            const valor = getListValor();
+            if (valor === null) return;
+            toggleListButtons(true);
+            logToConsole(`Iniciando "Añadir al Final" para "${valor}"...`);
+            if (miLista.head === null) {
+                miLista.addTail(valor);
+                renderLista();
+                logToConsole(`Lista vacía. Valor "${valor}" añadido como Head.`);
+                updateListExplanation(
+                    'Operación: Añadir al Final (Tail)',
+                    `<p>La lista estaba vacía.</p>
+                     <p>1. Se ha creado un nuevo <strong>Nodo(${valor})</strong>.</p>
+                     <p>2. La variable <code>head</code> de la lista ahora apunta a este nuevo nodo (igual que "Añadir al Inicio").</p>`
+                );
+            } else {
+                let actual = miLista.head;
+                let index = 0;
+                while (actual.next !== null) {
+                    logToConsole(`Recorriendo... estamos en Nodo(${actual.data}). Buscando el final.`);
+                    const nodeBox = document.getElementById(`node-${index}`);
+                    if (nodeBox) nodeBox.classList.add('node-highlight');
+                    await sleep(500);
+                    if (nodeBox) nodeBox.classList.remove('node-highlight');
+                    actual = actual.next;
+                    index++;
+                }
+                logToConsole(`Llegamos al último nodo: Nodo(${actual.data}).`);
+                const lastNodeBox = document.getElementById(`node-${index}`);
+                if (lastNodeBox) lastNodeBox.classList.add('node-highlight');
+                await sleep(500);
+                
+                miLista.addTail(valor);
+                renderLista();
+                logToConsole(`Valor "${valor}" añadido al FINAL (Tail).`);
+                
+                await sleep(100); // Dar tiempo a JS para re-renderizar
+                
+                if (lastNodeBox) lastNodeBox.classList.remove('node-highlight');
+                const newNodeBox = document.getElementById(`node-${index+1}`);
+                if (newNodeBox) {
+                    newNodeBox.classList.add('node-found');
+                    await sleep(1000);
+                    newNodeBox.classList.remove('node-found');
+                }
+                
+                updateListExplanation(
+                    'Operación: Añadir al Final (Tail)',
+                    `<p>Se ha creado un nuevo <strong>Nodo(${valor})</strong>.</p>
+                     <p>1. Tuvimos que <strong>recorrer toda la lista</strong>, empezando desde <code>head</code>, hasta encontrar un nodo cuyo puntero <code>next</code> sea <code>NULL</code>.</p>
+                     <p>2. El último nodo fue <strong>Nodo(${actual.data})</strong>.</p>
+                     <p>3. El puntero <code>next</code> de <strong>Nodo(${actual.data})</strong> ahora apunta al nuevo <strong>Nodo(${valor})</strong>.</p>
+                     <p><strong>Desventaja:</strong> Esta operación es <strong>O(n)</strong>. Tarda más cuanto más larga es la lista.</p>`
+                );
+            }
+            input.value = '';
+            toggleListButtons(false);
+        });
+
+        removeBtn.addEventListener('click', async () => {
+            const valor = getListValor();
+            if (valor === null) return;
+            toggleListButtons(true);
+            logToConsole(`Iniciando "Eliminar" para "${valor}"...`);
+            if (miLista.head === null) {
+                logToConsole('Error: La lista está vacía.', 'error');
+                updateListExplanation('Error: Lista Vacía', '<p>No se puede eliminar nada de una lista vacía.</p>');
+                toggleListButtons(false);
+                return;
+            }
+            let actual = miLista.head;
+            let index = 0;
+            let found = false;
+            while (actual !== null) {
+                logToConsole(`Comparando con Nodo(${actual.data})...`);
+                const nodeBox = document.getElementById(`node-${index}`);
+                if (nodeBox) nodeBox.classList.add('node-highlight');
+                await sleep(500);
+                if (actual.data === valor) {
+                    logToConsole(`¡Valor "${valor}" encontrado! Eliminando...`);
+                    if (nodeBox) nodeBox.classList.add('node-found', 'danger');
+                    found = true;
+                    break;
+                }
+                if (nodeBox) nodeBox.classList.remove('node-highlight');
+                actual = actual.next;
+                index++;
+            }
+            await sleep(500);
+            const resultado = miLista.remove(valor);
+            if (resultado) {
+                renderLista();
+                logToConsole(`Nodo("${valor}") eliminado correctamente.`);
+                updateListExplanation(
+                    'Operación: Eliminar Valor',
+                    `<p>Se buscó el nodo <strong>Nodo(${valor})</strong>.</p>
+                     <p>1. Se recorrió la lista manteniendo una referencia al nodo <strong>previo</strong>.</p>
+                     <p>2. Al encontrar el nodo, se modificó el puntero <code>next</code> del nodo <strong>previo</strong> para que "saltara" al nodo eliminado y apuntara directamente al nodo <strong>siguiente</strong> (<code>previo.next = actual.next</code>).</p>`
+                );
+            } else {
+                logToConsole(`Error: Valor "${valor}" no encontrado en la lista.`, 'error');
+                updateListExplanation('Operación: Eliminar Valor', `<p>Se recorrió toda la lista pero el valor <code>${valor}</code> no fue encontrado. No se realizó ninguna acción.</p>`);
+                document.querySelectorAll('.node-highlight').forEach(n => n.classList.remove('node-highlight'));
+            }
+            input.value = '';
+            toggleListButtons(false);
+        });
+
+        searchBtn.addEventListener('click', async () => {
+            const valor = getListValor();
+            if (valor === null) return;
+            toggleListButtons(true);
+            logToConsole(`Iniciando "Búsqueda" para "${valor}"...`);
+            if (miLista.head === null) {
+                logToConsole('Error: La lista está vacía.', 'error');
+                updateListExplanation('Error: Lista Vacía', '<p>No se puede buscar nada en una lista vacía.</p>');
+                toggleListButtons(false);
+                return;
+            }
+            let actual = miLista.head;
+            let index = 0;
+            let found = false;
+            while (actual !== null) {
+                logToConsole(`Comparando con Nodo(${actual.data})...`);
+                const nodeBox = document.getElementById(`node-${index}`);
+                if (nodeBox) nodeBox.classList.add('node-highlight');
+                await sleep(600);
+                if (actual.data === valor) {
+                    logToConsole(`¡Valor "${valor}" encontrado en el índice ${index}!`);
+                    if (nodeBox) nodeBox.classList.add('node-found');
+                    found = true;
+                    updateListExplanation(
+                        'Operación: Búsqueda Exitosa',
+                        `<p>Se recorrió la lista nodo por nodo (operación <strong>O(n)</strong>).</p>
+                         <p>1. Se comparó el valor buscado (<code>${valor}</code>) con el dato de cada nodo.</p>
+                         <p>2. ¡Se encontró una coincidencia en <strong>Nodo(${actual.data})</strong>!</p>`
+                    );
+                    break;
+                }
+                if (nodeBox) nodeBox.classList.remove('node-highlight');
+                actual = actual.next;
+                index++;
+            }
+            if (!found) {
+                logToConsole(`Valor "${valor}" no encontrado en la lista.`, 'error');
+                updateListExplanation(
+                    'Operación: Búsqueda Fallida',
+                    `<p>Se recorrió la lista entera, desde <code>head</code> hasta <code>NULL</code>.</p>
+                     <p>No se encontró ningún nodo que contuviera el valor <code>${valor}</code>.</p>`
+                );
+            }
+            await sleep(2000);
+            document.querySelectorAll('.node-box').forEach(n => {
+                n.classList.remove('node-highlight');
+                n.classList.remove('node-found');
+            });
+            input.value = '';
+            toggleListButtons(false);
+        });
+        
+        clearBtn.addEventListener('click', () => {
+            miLista.head = null;
+            miLista.size = 0;
+            renderLista();
+            logToConsole('¡Lista borrada! El "head" ahora es "NULL".');
+            updateListExplanation(
+                'Operación: Limpiar Lista',
+                `<p>Se ha vaciado la lista estableciendo la referencia <code>head</code> a <code>NULL</code>.</p>
+                 <p>Todos los nodos anteriores quedan sin referencia y serán limpiados de la memoria por el recolector de basura de JavaScript.</p>`
+            );
+        });
+
+        // ======================================================
+        // --- 3. LÓGICA DE FILAS (SIMULADOR) ---
+        // ======================================================
+
+        // --- 3.1. Definición de las Estructuras de Datos (Fila) ---
+        class Fila {
+            constructor() {
+                this.items = []; // Usamos un array simple para la implementación
+            }
+            
+            // Añadir al final (rear)
+            enqueue(data) {
+                this.items.push(data);
+            }
+            
+            // Quitar del inicio (front)
+            dequeue() {
+                if (this.isEmpty()) {
+                    return null;
+                }
+                return this.items.shift();
+            }
+            
+            // Ver el primer elemento
+            peek() {
+                if (this.isEmpty()) {
+                    return null;
+                }
+                return this.items[0];
+            }
+            
+            isEmpty() {
+                return this.items.length === 0;
+            }
+            
+            size() {
+                return this.items.length;
+            }
+        }
+
+        // --- 3.2. Lógica de la Interfaz (DOM Fila) ---
+        const miFila = new Fila();
+        const filaVisArea = document.getElementById('fila-visualization-area');
+        const filaInput = document.getElementById('fila-value');
+        const enqueueBtn = document.getElementById('enqueue-btn');
+        const dequeueBtn = document.getElementById('dequeue-btn');
+        const clearFilaBtn = document.getElementById('clear-fila-btn');
+        const filaConsoleOutput = document.getElementById('fila-console-output');
+        const filaExplanationPanel = document.getElementById('fila-explanation-panel');
+
+        function toggleFilaButtons(disabled) {
+            enqueueBtn.disabled = disabled;
+            dequeueBtn.disabled = disabled;
+            clearFilaBtn.disabled = disabled;
+        }
+
+        function renderFila() {
+            filaVisArea.innerHTML = '';
+            if (miFila.isEmpty()) {
+                filaVisArea.innerHTML = '<span class="null-text">[FILA VACÍA]</span>';
+                return;
+            }
+            
+            // Añadir etiqueta "Frente"
+            const frontLabel = document.createElement('span');
+            frontLabel.className = 'queue-label front';
+            frontLabel.textContent = 'FRENTE (Sale de aquí)';
+            filaVisArea.appendChild(frontLabel);
+
+            // Añadir items
+            miFila.items.forEach((item, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'queue-item';
+                itemDiv.id = `item-${index}`;
+                itemDiv.textContent = item;
+                filaVisArea.appendChild(itemDiv);
+            });
+            
+            // Añadir etiqueta "Final"
+            const rearLabel = document.createElement('span');
+            rearLabel.className = 'queue-label rear';
+            rearLabel.textContent = 'FINAL (Entra por aquí)';
+            filaVisArea.appendChild(rearLabel);
+        }
+
+        function logToFilaConsole(message, type = 'log') {
+            const entry = document.createElement('div');
+            entry.className = type === 'error' ? 'log-entry log-error' : 'log-entry';
+            entry.textContent = message;
+            filaConsoleOutput.appendChild(entry);
+            filaConsoleOutput.scrollTop = filaConsoleOutput.scrollHeight;
+        }
+
+        function updateFilaExplanation(title, content) {
+            filaExplanationPanel.innerHTML = `<h3>${title}</h3>${content}`;
+        }
+        
+        function getFilaValor() {
+            const valor = filaInput.value.trim();
+            if (valor === '') {
+                logToFilaConsole('Error: El valor no puede estar vacío.', 'error');
+                updateFilaExplanation('Error de Entrada', '<p>Debes introducir un valor en la caja de texto para realizar esta operación.</p>');
+                return null;
+            }
+            return valor;
+        }
+
+        enqueueBtn.addEventListener('click', () => {
+            const valor = getFilaValor();
+            if (valor === null) return;
+            
+            miFila.enqueue(valor);
+            renderFila();
+            
+            // Pequeña animación
+            const nuevoItem = filaVisArea.querySelector(`#item-${miFila.size() - 1}`);
+            if(nuevoItem) {
+                nuevoItem.classList.add('item-highlight');
+                setTimeout(() => nuevoItem.classList.remove('item-highlight'), 1000);
+            }
+
+            logToFilaConsole(`Valor "${valor}" añadido al FINAL (Enqueued).`);
+            updateFilaExplanation(
+                'Operación: Encolar (Enqueue)',
+                `<p>Se ha añadido el elemento <strong>${valor}</strong> al <strong>final</strong> de la fila.</p>
+                 <p>En nuestra implementación con un Array, esto es una operación <code>push()</code>.</p>
+                 <p>Esta operación es muy rápida, <strong>O(1)</strong>.</p>`
+            );
+            filaInput.value = '';
+        });
+        
+        dequeueBtn.addEventListener('click', async () => {
+            toggleFilaButtons(true);
+            if (miFila.isEmpty()) {
+                logToFilaConsole('Error: La fila está vacía. No se puede desencolar.', 'error');
+                updateFilaExplanation('Error: Fila Vacía', '<p>No se puede eliminar un elemento porque la fila ya está vacía (Underflow).</p>');
+                toggleFilaButtons(false);
+                return;
+            }
+
+            // Animar el elemento que sale
+            const itemSaliendo = filaVisArea.querySelector('#item-0');
+            if (itemSaliendo) {
+                itemSaliendo.classList.add('queue-item-out');
+                logToFilaConsole(`Elemento "${miFila.peek()}" saliendo del FRENTE...`);
+                await sleep(500); // Esperar que termine la animación
+            }
+            
+            const valor = miFila.dequeue();
+            renderFila();
+            logToFilaConsole(`Elemento "${valor}" ha sido eliminado del FRENTE (Dequeued).`);
+            updateFilaExplanation(
+                'Operación: Desencolar (Dequeue)',
+                `<p>Se ha eliminado el elemento <strong>${valor}</strong> del <strong>frente</strong> de la fila.</p>
+                 <p>Este era el primer elemento que entró (principio <strong>FIFO</strong>).</p>
+                 <p>En nuestra implementación con un Array, esto es una operación <code>shift()</code>.</p>
+                 <p><strong>Nota:</strong> En un Array, <code>shift()</code> puede ser lento (<strong>O(n)</strong>) porque debe re-indexar todos los demás elementos. En una Fila implementada con Listas Enlazadas, esta operación sería <strong>O(1)</strong>.</p>`
+            );
+            
+            toggleFilaButtons(false);
+        });
+        
+        clearFilaBtn.addEventListener('click', () => {
+            miFila.items = [];
+            renderFila();
+            logToFilaConsole('¡Fila borrada!');
+            updateFilaExplanation(
+                'Operación: Limpiar Fila',
+                `<p>Se ha vaciado la fila. Todos los elementos han sido eliminados.</p>`
+            );
+        });
+
+        // ======================================================
+        // --- 4. LÓGICA DE GLOSARIOS INTERACTIVOS ---
+        // ======================================================
+
+        // --- 4.1. Base de Datos de Conceptos (Listas) ---
+        // ¡CONTENIDO EXPANDIDO!
+        const conceptosListas = {
+            'ventaja_memoria': {
+                titulo: 'Ventaja: Gestión Dinámica de Memoria',
+                html: `
+                    <p>A diferencia de los <strong>Arrays</strong> (vectores), que necesitan un bloque de memoria contiguo y de tamaño fijo, las listas enlazadas pueden crecer y decrecer dinámicamente en tiempo de ejecución.</p>
+                    
+                    <h3>Definición Detallada</h3>
+                    <p>Cuando creas un array (ej. <code>int miArray[100]</code>), reservas 100 espacios en la memoria <strong>de una sola vez</strong>, uno al lado del otro. Si solo usas 5, desperdicias 95. Si necesitas 101, el programa falla.</p>
+                    <p>Una lista enlazada solo pide memoria (del "heap" o montón) <strong>cuando la necesita</strong>, un nodo a la vez. Cada nodo puede estar en cualquier parte de la memoria, ya que su ubicación se "recuerda" en el puntero <code>next</code> del nodo anterior.</p>
+                    
+                    <h3>Analogía</h3>
+                    <p>Un <strong>Array</strong> es como una banca de asientos fija en un parque. Tiene 10 lugares. Si llegan 3 personas, 7 asientos quedan vacíos. Si llegan 11, una persona no se puede sentar.</p>
+                    <p>Una <strong>Lista Enlazada</strong> es como un restaurante que saca sillas una por una. Si llegan 3 personas, saca 3 sillas. Si llega 1 más, saca otra silla. No hay desperdicio y puede crecer "infinitamente" (hasta que el restaurante se quede sin sillas).</p>
+                    
+                    <h3>Aplicación</h3>
+                    <p>Perfecto para situaciones donde la cantidad de datos es impredecible: una lista de tareas, un historial de navegación, jugadores en un servidor de juegos.</p>
+                `
+            },
+            'ventaja_insercion': {
+                titulo: 'Ventaja: Inserción/Eliminación Rápida (O(1))',
+                html: `
+                    <p>Insertar o eliminar un elemento al <strong>principio</strong> (Head) de una lista enlazada es una operación de tiempo constante, <strong>O(1)</strong>.</p>
+                    
+                    <h3>Definición Detallada</h3>
+                    <p><strong>O(1)</strong> o "Tiempo Constante" significa que la operación tarda el mismo tiempo, sin importar si la lista tiene 10 elementos o 10 millones.</p>
+                    <p>Para añadir al inicio (<code>addHead</code>):</p>
+                    <ol>
+                        <li>Creas un nuevo nodo.</li>
+                        <li>Haces que el puntero <code>next</code> del nuevo nodo apunte al <code>head</code> actual.</li>
+                        <li>Actualizas el <code>head</code> para que apunte al nuevo nodo.</li>
+                    </ol>
+                    <p>Son 3 simples pasos, sin bucles ni recorridos.</p>
+                    
+                    <h3>Comparación (El desastre del Array)</h3>
+                    <p>En un <strong>Array</strong>, insertar al principio es <strong>O(n)</strong> o "Tiempo Lineal". Para insertar un elemento al inicio de un array de 1,000,000 de elementos, debes "empujar" los 1,000,000 de elementos existentes una posición a la derecha para hacer espacio. Esto es extremadamente lento.</p>
+                    
+                    <h3>Aplicación</h3>
+                    <p>Esta es la razón por la que las <strong>Pilas (Stacks)</strong>, que siguen el principio LIFO (Último en Entrar, Primero en Salir), se implementan perfectamente con listas enlazadas.</p>
+                `
+            },
+            'desventaja_acceso': {
+                titulo: 'Desventaja: Acceso Secuencial (O(n))',
+                html: `
+                    <p>La mayor desventaja de las listas enlazadas. No permiten el <strong>acceso aleatorio</strong> (o acceso directo por índice).</p>
+                    
+                    <h3>Definición Detallada</h3>
+                    <p>En un <strong>Array</strong>, si quieres el elemento en el índice 50 (<code>miArray[50]</code>), la computadora puede calcular su dirección de memoria al instante: <code>(dirección_base + 50 * tamaño_del_elemento)</code>. Esto es <strong>O(1)</strong>.</p>
+                    <p>En una <strong>Lista Enlazada</strong>, los nodos están esparcidos. Para encontrar el elemento 50, debes:</p>
+                    <ol>
+                        <li>Ir al <code>head</code> (elemento 0).</li>
+                        <li>Seguir su <code>next</code> al elemento 1.</li>
+                        <li>Seguir su <code>next</code> al elemento 2.</li>
+                        <li>...repetir 50 veces...</li>
+                    </ol>
+                    <p>Esto se llama <strong>acceso secuencial</strong>. Su complejidad es <strong>O(n)</strong> o "Tiempo Lineal": si la lista es el doble de larga, tardas el doble de tiempo en encontrar un elemento.</p>
+                    
+                    <h3>Conclusión</h3>
+                    <p>Si tu programa necesita "saltar" frecuentemente a elementos por su índice (ej. <code>getElemento(i)</code>), una lista enlazada es una mala elección. Si principalmente añades/quitas del inicio, es una elección excelente.</p>
+                `
+            },
+            'desventaja_memoria_extra': {
+                titulo: 'Desventaja: Costo Extra de Memoria (Overhead)',
+                html: `
+                    <p>Cada nodo en la lista debe almacenar no solo el <strong>dato</strong>, sino también uno o más <strong>punteros</strong> (<code>next</code>, y <code>prev</code> en listas dobles).</p>
+                    
+                    <h3>Definición Detallada</h3>
+                    <p>Este espacio extra se conoce como "overhead" o sobrecosto. Un <strong>Array</strong> solo almacena los datos, nada más. Es 100% eficiente en espacio.</p>
+                    <p>Una <strong>Lista Enlazada</strong> almacena el dato + el puntero.</p>
+                    
+                    <h3>Ejemplo Cuantitativo</h3>
+                    <p>Imagina que almacenas números enteros (<code>int</code>) que ocupan 4 bytes.</p>
+                    <p>En un sistema de 64 bits, una dirección de memoria (un puntero) ocupa 8 bytes.</p>
+                    <p>Por cada 4 bytes de datos útiles, ¡estás gastando 8 bytes adicionales solo para el puntero! El "overhead" es del 200%. El puntero ocupa el doble de espacio que el dato mismo.</p>
+                    <p>Si almacenas datos grandes (como objetos de clientes), este overhead se vuelve insignificante, pero para datos pequeños, es considerable.</p>
+                `
+            },
+            'nodo': {
+                titulo: 'Concepto: Nodo (Node)',
+                html: `
+                    <p>El <strong>Nodo</strong> es la unidad fundamental, el "ladrillo" con el que se construyen las listas enlazadas.</p>
+                    
+                    <h3>Definición Detallada</h3>
+                    <p>Un nodo es una pequeña estructura (o un objeto, en JavaScript) que agrupa dos piezas de información:</p>
+                    <ul>
+                        <li><strong>Dato (Data):</strong> El valor real que queremos almacenar (un número, un string, un objeto "Usuario", etc.).</li>
+                        <li><strong>Puntero (Next):</strong> Una referencia (la dirección de memoria) al <strong>siguiente nodo</strong> de la lista.</li>
+                    </ul>
+                    <p>En pseudocódigo, se vería así:</p>
+                    <code>
+                        class Nodo {<br>
+                        &nbsp;&nbsp;data: valor;<br>
+                        &nbsp;&nbsp;next: PunteroANodo;<br>
+                        }
+                    </code>
+                    
+                    <h3>El Puntero NULL</h3>
+                    <p>¿Cómo sabemos que la lista terminó? El puntero <code>next</code> del <strong>último nodo</strong> de la cadena no apunta a nada. Se le asigna un valor especial: <code>NULL</code> (o <code>null</code> en JavaScript).</p>
+                    <p>Cuando recorremos la lista y encontramos un nodo cuyo <code>next</code> es <code>null</code>, sabemos que hemos llegado al final.</p>
+                `
+            },
+            'head_tail': {
+                titulo: 'Concepto: Head y Tail (Cabeza y Cola)',
+                html: `
+                    <p>Son dos punteros especiales que la estructura de la "Lista Enlazada" usa para saber dónde empezar y (a veces) dónde terminar.</p>
+                    
+                    <h3>Head (Cabeza)</h3>
+                    <p>El <code>head</code> es <strong>esencial</strong>. Es el punto de entrada a la lista. Es un puntero que <strong>siempre</strong> apunta al <strong>primer nodo</strong> de la cadena.</p>
+                    <p>Si <code>head</code> es <code>NULL</code>, significa que la lista está vacía. Todas las operaciones (añadir, buscar, eliminar) deben empezar por el <code>head</code>.</p>
+                    
+                    <h3>Tail (Cola)</h3>
+                    <p>El <code>tail</code> es una <strong>optimización opcional</strong>. Es un puntero que <strong>siempre</strong> apunta al <strong>último nodo</strong> de la cadena.</p>
+                    <p><strong>¿Por qué usarlo?</strong> Observa nuestro simulador: la operación "Añadir al Final" (<code>addTail</code>) tiene que recorrer <strong>toda la lista (O(n))</strong> solo para encontrar el último nodo.</p>
+                    <p>Si tuviéramos un puntero <code>tail</code>, <code>addTail</code> se volvería <strong>O(1)</strong>:</p>
+                    <ol>
+                        <li>Crear nuevo nodo.</li>
+                        <li>Hacer que <code>tail.next</code> apunte al nuevo nodo.</li>
+                        <li>Actualizar <code>tail</code> para que apunte al nuevo nodo.</li>
+                    </ol>
+                    <p>La desventaja es que debemos mantener el <code>tail</code> actualizado (ej. al eliminar el último nodo), lo que añade un poco de complejidad.</p>
+                `
+            },
+            'lista_doble': {
+                titulo: 'Tipo: Lista Doblemente Enlazada',
+                html: `
+                    <p>Una variación de la lista enlazada simple que añade más flexibilidad a costa de más memoria.</p>
+                    
+                    <h3>Definición Detallada</h3>
+                    <p>En una lista doble, cada <strong>Nodo</strong> tiene <strong>dos punteros</strong> (y el dato):</p>
+                    <ul>
+                        <li><code>next</code>: Apunta al siguiente nodo.</li>
+                        <li><code>prev</code> (previous): Apunta al nodo <strong>anterior</strong>.</li>
+                    </ul>
+                    <p>El puntero <code>prev</code> del <code>head</code> apunta a <code>NULL</code>, y el <code>next</code> del <code>tail</code> apunta a <code>NULL</code>.</p>
+                    
+                    <h3>Ventajas</h3>
+                    <ul>
+                        <li><strong>Recorrido Bidireccional:</strong> Puedes recorrer la lista en <strong>ambas direcciones</strong> (hacia adelante y hacia atrás).</li>
+                        <li><strong>Eliminación Eficiente:</strong> Eliminar un nodo (si ya tienes una referencia a él) es <strong>O(1)</strong>. En una lista simple, seguía siendo <strong>O(n)</strong> porque necesitabas encontrar el nodo <code>previo</code> para "saltar" el nodo a eliminar. Aquí, ya tienes el puntero <code>prev</code>.</li>
+                    </ul>
+                    
+                    <h3>Aplicación</h3>
+                    <p>Son la base para implementar la función "Deshacer" (Undo) y "Rehacer" (Redo) en un editor de texto. También se usan para el historial "Atrás" y "Adelante" de un navegador web.</p>
+                `
+            },
+            'lista_circular': {
+                titulo: 'Tipo: Lista Circular',
+                html: `
+                    <p>Una variación de la lista enlazada (simple o doble) donde el final se conecta con el principio.</p>
+                    
+                    <h3>Definición Detallada</h3>
+                    <p>En una lista circular simple, el puntero <code>next</code> del <strong>último nodo</strong> (Tail) no apunta a <code>NULL</code>. En su lugar, apunta de nuevo al <strong>primer nodo</strong> (Head).</p>
+                    <p>La lista forma un bucle o un anillo. Ya no hay un "final" verdadero.</p>
+                    
+                    <h3>Ventajas</h3>
+                    <ul>
+                        <li>Puedes recorrer la lista infinitamente.</li>
+                        <li>Cualquier nodo puede ser un "punto de inicio" para el recorrido.</li>
+                        <li>Con un solo puntero (al <code>tail</code>), puedes acceder tanto al final (<code>tail</code>) como al principio (<code>tail.next</code>) en <strong>O(1)</strong>.</li>
+                    </ul>
+                    
+                    <h3>Aplicación</h3>
+                    <ul>
+                        <li><strong>Round Robin:</strong> En sistemas operativos, para dar a cada proceso una pequeña porción de tiempo de CPU. Cuando se acaba el tiempo del último proceso, la CPU "salta" de nuevo al primero.</li>
+                        <li><strong>Turnos en Juegos:</strong> Administrar turnos en un juego multijugador. Cuando el último jugador termina su turno, le toca al primero otra vez.</li>
+                        <li><strong>Playlists:</strong> Una lista de reproducción de música en modo "Repetir Lista".</li>
+                    </ul>
+                `
+            },
+            'aplicacion_historial': {
+                titulo: 'Aplicación: Historial de Navegación',
+                html: `
+                    <p>El historial "Atrás" y "Adelante" de tu navegador es una aplicación clásica de una <strong>Lista Doblemente Enlazada</strong>.</p>
+                    
+                    <h3>Funcionamiento</h3>
+                    <p>Imagina que tu pestaña actual es un puntero llamado <code>currentPage</code>.</p>
+                    <ul>
+                        <li>Cada página web que visitas se añade como un <strong>Nodo</strong>.</li>
+                        <li>Cuando haces clic en <strong>"Atrás"</strong>, el navegador simplemente hace <code>currentPage = currentPage.prev</code>.</li>
+                        <li>Cuando haces clic en <strong>"Adelante"</strong>, hace <code>currentPage = currentPage.next</code>.</li>
+                    </ul>
+                    
+                    <h3>¿Qué pasa si abres un enlace nuevo?</h3>
+                    <p>Si estás en medio de tu historial (ej. página C) y abres un enlace nuevo (página F), la "rama" de adelante (páginas D y E) se elimina. El nuevo nodo (F) se inserta después de C, y F se convierte en el nuevo <code>tail</code>.</p>
+                    <p><code>A &lt;-> B &lt;-> C &lt;-> D &lt;-> E</code></p>
+                    <p>...abres F desde C...</p>
+                    <p><code>A &lt;-> B &lt;-> C &lt;-> F</code> (D y E se borran)</p>
+                `
+            },
+            'aplicacion_playlist': {
+                titulo: 'Aplicación: Lista de Reproducción de Música',
+                html: `
+                    <p>Una lista de reproducción (playlist) se implementa perfectamente con una <strong>Lista Doblemente Enlazada Circular</strong>.</p>
+                    
+                    <h3>Funcionamiento</h3>
+                    <ul>
+                        <li>Cada canción es un <strong>Nodo</strong>.</li>
+                        <li>El botón <strong>"Siguiente"</strong> sigue el puntero <code>next</code>.</li>
+                        <li>El botón <strong>"Anterior"</strong> sigue el puntero <code>prev</code>.</li>
+                        <li>Al ser <strong>circular</strong>, cuando la última canción termina, su puntero <code>next</code> te lleva de nuevo a la primera canción. Esto implementa la función "Repetir Lista" de forma natural.</li>
+                    </ul>
+                `
+            },
+        };
+        
+        // --- 4.2. Base de Datos de Conceptos (Filas) ---
+        // ¡CONTENIDO EXPANDIDO!
+         const conceptosFilas = {
+             'fifo': {
+                 titulo: 'Principio: FIFO (First-In, First-Out)',
+                 html: `
+                    <p>Es la regla fundamental de todas las Filas (Queues). Significa <strong>"El Primero en Entrar, es el Primero en Salir"</strong>.</p>
+                    
+                    <h3>Definición Detallada</h3>
+                    <p>En una Fila, los elementos solo pueden ser añadidos por un extremo (el <strong>Final</strong> o <code>Rear</code>) y solo pueden ser eliminados por el otro extremo (el <strong>Frente</strong> o <code>Front</code>).</p>
+                    <p>Esto garantiza que los elementos se procesan exactamente en el orden en que llegaron. No se puede "colar" nadie.</p>
+                    
+                    <h3>Analogía</h3>
+                    <p>Es exactamente como una fila en el mundo real: una cola para pagar en el supermercado, una fila de coches en un semáforo, o una fila para comprar entradas. La primera persona que se forma es la primera persona en ser atendida.</p>
+                    
+                    <h3>Contraste: LIFO (Pilas)</h3>
+                    <p>Lo opuesto es <strong>LIFO (Last-In, First-Out)</strong>, "El Último en Entrar, es el Primero en Salir". Este es el principio de las <strong>Pilas (Stacks)</strong>, como una pila de platos: el último plato que pones encima es el primero que quitas.</p>
+                 `
+             },
+             'enqueue': {
+                 titulo: 'Operación: Enqueue (Encolar)',
+                 html: `
+                    <p>Es la operación para <strong>añadir</strong> un elemento a la Fila.</p>
+                    
+                    <h3>Definición Detallada</h3>
+                    <p>La operación <code>enqueue</code> siempre añade el nuevo elemento al <strong>final</strong> de la fila (también llamado <code>Rear</code> o <code>Tail</code>).</p>
+                    
+                    <h3>Complejidad (Big O)</h3>
+                    <p>Esta operación casi siempre es muy rápida, con una complejidad de <strong>O(1)</strong> (Tiempo Constante).</p>
+                    <ul>
+                        <li><strong>En un Array:</strong> La operación <code>push()</code> añade al final en O(1).</li>
+                        <li><strong>En una Lista Enlazada:</strong> Si se mantiene un puntero <code>tail</code> (como se debería), añadir al final también es O(1).</li>
+                    </ul>
+                 `
+             },
+             'dequeue': {
+                 titulo: 'Operación: Dequeue (Desencolar)',
+                 html: `
+                    <p>Es la operación para <strong>eliminar</strong> un elemento de la Fila.</p>
+                    
+                    <h3>Definición Detallada</h3>
+                    <p>La operación <code>dequeue</code> siempre elimina y devuelve el elemento que está al <strong>frente</strong> de la fila (también llamado <code>Front</code> o <code>Head</code>).</p>
+                    <p>Este es el elemento que ha estado en la fila por más tiempo, respetando el principio FIFO.</p>
+                    
+                    <h3>Complejidad (Big O)</h3>
+                    <p>La complejidad <strong>depende críticamente de la implementación</strong>:</p>
+                    <ul>
+                        <li><strong>En una Lista Enlazada:</strong> Eliminar el <code>head</code> es una simple reasignación de puntero (<code>head = head.next</code>). Es <strong>O(1)</strong>.</li>
+                        <li><strong>En un Array (¡Lento!):</strong> La operación <code>shift()</code> (como en nuestro simulador) elimina el primer elemento, pero luego debe <strong>re-indexar todos los demás elementos</strong> moviéndolos una posición a la izquierda. Esto es <strong>O(n)</strong> y es muy ineficiente para filas grandes.</li>
+                    </ul>
+                 `
+             },
+             'front_rear': {
+                 titulo: 'Concepto: Front y Rear (Frente y Final)',
+                 html: `
+                    <p>Son los dos punteros, índices o referencias que la estructura de la Fila necesita para operar.</p>
+                    
+                    <h3>Front (o Head)</h3>
+                    <p>Apunta al <strong>inicio</strong> o "frente" de la fila. Es la posición del próximo elemento que será eliminado por <code>dequeue</code>. Es el elemento "más viejo".</p>
+                    
+                    <h3>Rear (o Tail)</h3>
+                    <p>Apunta al <strong>final</strong> de la fila. Es la posición donde se añadirá el próximo elemento en una operación <code>enqueue</code>. Es el elemento "más nuevo".</p>
+                    
+                    <p>En una implementación de array, <code>Front</code> podría ser siempre el índice <code>0</code>, mientras que <code>Rear</code> sería <code>array.length - 1</code>. En una implementación de lista enlazada, <code>Front</code> es el puntero <code>head</code> y <code>Rear</code> es el puntero <code>tail</code>.</p>
+                 `
+             },
+             'underflow': {
+                 titulo: 'Condición de Error: Underflow (Subdesbordamiento)',
+                 html: `
+                    <p>Es un error común que ocurre al intentar operar en una fila vacía.</p>
+                    
+                    <h3>Definición Detallada</h3>
+                    <p>Ocurre cuando intentas realizar una operación <code>dequeue</code> (desencolar) o <code>peek</code> (ver el frente) en una <strong>fila que ya está vacía</strong>.</p>
+                    <p>No hay ningún elemento para eliminar o ver, por lo que el programa entra en un estado de error.</p>
+                    
+                    <h3>Manejo de Errores</h3>
+                    <p>Un buen programa siempre debe comprobar si la fila está vacía <strong>antes</strong> de intentar desencolar. En JavaScript, esto se hace con una propiedad como <code>.length === 0</code> o un método <code>.isEmpty()</code>.</p>
+                    <code>
+                        if (miFila.isEmpty()) {<br>
+                        &nbsp;&nbsp;// Mostrar error, no hacer nada<br>
+                        } else {<br>
+                        &nbsp;&nbsp;miFila.dequeue();<br>
+                        }
+                    </code>
+                 `
+             },
+             'overflow': {
+                 titulo: 'Condición de Error: Overflow (Desbordamiento)',
+                 html: `
+                    <p>Este error ocurre solo en <strong>filas de tamaño fijo</strong> (o "acotadas").</p>
+                    
+                    <h3>Definición Detallada</h3>
+                    <p>Ocurre cuando intentas realizar una operación <code>enqueue</code> (encolar) en una <strong>fila que ya está llena</strong> (ha alcanzado su capacidad máxima).</p>
+                    
+                    <h3>Aplicación</h3>
+                    <p>Esto no suele ser un problema en JavaScript (como en nuestro simulador), porque los Arrays de JavaScript crecen dinámicamente: solo se produce un "overflow" si te acabas toda la memoria RAM del sistema.</p>
+                    <p>Sin embargo, en lenguajes como C, C++ o Java, es muy común crear filas (especialmente "Filas Circulares") basadas en un array de tamaño fijo (ej. <code>new Fila(100)</code>). En ese caso, debes comprobar <code>isFull()</code> antes de encolar.</p>
+                 `
+             },
+             'impl_array': {
+                 titulo: 'Implementación: Con Arrays',
+                 html: `
+                    <p>Una forma simple de crear una Fila, pero con una gran desventaja de rendimiento.</p>
+                    <ul>
+                        <li><strong>Enqueue:</strong> Se usa la operación <code>push()</code> para añadir al final del array. Esto es rápido: <strong>O(1)</strong>.</li>
+                        <li><strong>Dequeue:</strong> Se usa la operación <code>shift()</code> para quitar del inicio del array. Esto es lento: <strong>O(n)</strong>.</li>
+                    </ul>
+                    
+                    <h3>Desventaja</h3>
+                    <p>La operación <code>shift()</code> es el problema. En un array de 1,000,000 de elementos, <code>shift()</code> elimina el primero y luego debe mover los 999,999 restantes una posición a la izquierda. Esto es inaceptable para aplicaciones de alto rendimiento.</p>
+                    
+                    <h3>Optimización: Fila Circular (Ring Buffer)</h3>
+                    <p>Se puede implementar una Fila <strong>O(1)</strong> usando un Array de tamaño fijo, pero de forma más inteligente. Se usan dos índices (<code>front</code> y <code>rear</code>) que "dan la vuelta" al array usando aritmética modular (<code>%</code>). Esto evita la operación <code>shift()</code> y es extremadamente rápido, pero es más complejo de programar.</p>
+                 `
+             },
+             'impl_lista': {
+                 titulo: 'Implementación: Con Listas Enlazadas',
+                 html: `
+                    <p>Esta es la implementación <strong>más eficiente y estándar</strong> para una Fila en la teoría.</p>
+                    
+                    <h3>Definición Detallada</h3>
+                    <p>Se usa una Lista Enlazada, manteniendo <strong>dos punteros</strong>:</p>
+                    <ul>
+                        <li>Un puntero <code>head</code> (el <code>front</code> de la fila).</li>
+                        <li>Un puntero <code>tail</code> (el <code>rear</code> de la fila).</li>
+                    </ul>
+                    
+                    <h3>Complejidad O(1)</h3>
+                    <p>Tener ambos punteros es la clave:</p>
+                    <ul>
+                        <li><strong>Enqueue (O(1)):</strong> Se añade un nuevo nodo al final usando el puntero <code>tail</code> y luego se actualiza <code>tail</code>. (3 pasos).</li>
+                        <li><strong>Dequeue (O(1)):</strong> Se elimina el nodo <code>head</code> y se actualiza <code>head</code> para que apunte a <code>head.next</code>. (2 pasos).</li>
+                    </ul>
+                    
+                    <h3>Ventaja vs. Desventaja</h3>
+                    <p><strong>Ventaja:</strong> Todas las operaciones clave son <strong>O(1)</strong>, haciéndola extremadamente rápida sin importar el tamaño.</p>
+                    <p><strong>Desventaja:</strong> Tiene el "overhead" de memoria de los punteros (ver glosario de listas).</p>
+                 `
+             },
+             'aplicacion_impresora': {
+                 titulo: 'Aplicación: Cola de Impresión (Spooling)',
+                 html: `
+                    <p>El ejemplo más clásico de una Fila.</p>
+                    
+                    <h3>Funcionamiento</h3>
+                    <p>Cuando varias personas en una oficina envían documentos a la misma impresora, la impresora no puede imprimirlos todos a la vez. El sistema operativo crea una <strong>Fila</strong> (llamada "spool" de impresión).</p>
+                    <ol>
+                        <li>Usuario A envía <code>doc1.pdf</code>. (<code>enqueue(doc1)</code>)</li>
+                        <li>Usuario B envía <code>doc2.jpg</code>. (<code>enqueue(doc2)</code>)</li>
+                        <li>Usuario A envía <code>doc3.txt</code>. (<code>enqueue(doc3)</code>)</li>
+                    </ol>
+                    <p>La impresora, cuando está lista, ejecuta <code>dequeue()</code>, obtiene <code>doc1.pdf</code> y lo imprime. Luego, <code>dequeue()</code> de nuevo y obtiene <code>doc2.jpg</code>. El orden FIFO asegura que todo sea justo.</p>
+                 `
+             },
+             'aplicacion_bfs': {
+                 titulo: 'Aplicación: Búsqueda en Amplitud (BFS)',
+                 html: `
+                    <p>Una aplicación fundamental en algoritmos de grafos, inteligencia artificial y para encontrar caminos más cortos.</p>
+                    
+                    <h3>Definición Detallada</h3>
+                    <p>BFS (Breadth-First Search) es un algoritmo para explorar un árbol o un grafo "por niveles". Utiliza una Fila para llevar un registro de los nodos que debe visitar.</p>
+                    
+                    <h3>Funcionamiento (Analogía)</h3>
+                    <p>Imagina que estás en el centro de un laberinto (el nodo raíz). Quieres encontrar la salida.</p>
+                    <ol>
+                        <li>Pones tu posición inicial en la Fila.</li>
+                        <li>Mientras la Fila no esté vacía:</li>
+                        <li>Sacas (<code>dequeue</code>) una ubicación ('A').</li>
+                        <li>Miras <strong>todos</strong> los pasillos directamente conectados a 'A' (sus "vecinos": 'B', 'C', 'D').</li>
+                        <li>Pones (<code>enqueue</code>) a 'B', 'C' y 'D' en la Fila.</li>
+                    </ol>
+                    <p>El principio <strong>FIFO</strong> de la Fila asegura que explores todos los pasillos a 1 paso de distancia, luego todos los pasillos a 2 pasos, luego a 3 pasos... De esta forma, el primer camino que encuentres hacia la salida será, por definición, el <strong>camino más corto</strong>.</p>
+                 `
+             },
+             'aplicacion_buffer': {
+                 titulo: 'Aplicación: Búfer de Datos (Streaming)',
+                 html: `
+                    <p>Las Filas son esenciales para gestionar flujos de datos (streaming) y resolver el "Problema del Productor-Consumidor".</p>
+                    
+                    <h3>Ejemplo: Video de YouTube</h3>
+                    <p>Cuando ves un video, hay dos procesos ocurriendo:</p>
+                    <ol>
+                        <li><strong>El Productor:</strong> Tu conexión a internet descarga los próximos segundos del video.</li>
+                        <li><strong>El Consumidor:</strong> Tu reproductor de video "consume" esos datos y los muestra en pantalla.</li>
+                    </ol>
+                    <p>El Productor (internet) puede ser rápido o lento. El Consumidor (video) es constante (ej. 30 fotogramas/seg). La <strong>Fila (búfer)</strong> actúa como el "colchón" entre ellos.</p>
+                    
+                    <h3>Funcionamiento</h3>
+                    <p>El Productor (internet) añade (<code>enqueue</code>) datos al final del búfer. El Consumidor (reproductor) saca (<code>dequeue</code>) datos del frente del búfer.</p>
+                    <p>Si tu internet es rápido, el búfer se llena (la barra gris avanza). Si tu internet se pausa, el reproductor sigue consumiendo del búfer. El video solo se congela si el Consumidor intenta hacer <code>dequeue</code> de un búfer vacío (Underflow).</p>
+                 `
+             },
+             'cola_prioridad': {
+                 titulo: 'Tipo: Cola de Prioridad (Priority Queue)',
+                 html: `
+                    <p>Una variación importante de la Fila donde el orden FIFO <strong>no se respeta</strong>.</p>
+                    
+                    <h3>Definición Detallada</h3>
+                    <p>En una Cola de Prioridad, cada elemento que entra (<code>enqueue</code>) tiene asignada una <strong>prioridad</strong> (ej. un número).</p>
+                    <p>La operación <code>dequeue</code> <strong>ignora</strong> quién llegó primero. En su lugar, busca y elimina al elemento con la <strong>prioridad más alta</strong> de toda la cola.</p>
+                    
+                    <h3>Analogía</h3>
+                    <p>Una sala de emergencias de un hospital. No atienden por orden de llegada (FIFO). Atienden por gravedad (prioridad).</p>
+                    <ul>
+                        <li>1:00 PM: Llega Paciente A (resfriado, prioridad 1).</li>
+                        <li>1:15 PM: Llega Paciente B (ataque al corazón, prioridad 10).</li>
+                    </ul>
+                    <p>El doctor (<code>dequeue</code>) atenderá primero al Paciente B, aunque haya llegado después.</p>
+                    
+                    <h3>Implementación</h3>
+                    <p>No se implementan con Listas Enlazadas (sería O(n) para encontrar la prioridad más alta). Se implementan con una estructura de árbol especializada llamada <strong>Heap (Montículo)</strong>, que hace que ambas operaciones (<code>enqueue</code> y <code>dequeue</code>) sean muy rápidas (<strong>O(log n)</strong>).</p>
+                 `
+             },
+         };
+
+        // --- 4.3. Función Genérica para crear Glosarios ---
+        
+        /**
+         * Inicializa un glosario interactivo.
+         * @param {string} navId ID del contenedor de navegación (botones)
+         * @param {string} contentId ID del contenedor de contenido (explicación)
+         * @param {Object} conceptosDB La base de datos de conceptos (ej. conceptosListas)
+         */
+        function inicializarGlosario(navId, contentId, conceptosDB) {
+            const nav = document.getElementById(navId);
+            const content = document.getElementById(contentId);
+            
+            if (!nav || !content) return; // Salir si los elementos no existen
+            
+            const botones = []; // Para gestionar el estado 'active'
+
+            // Crear los botones
+            for (const key in conceptosDB) {
+                const concepto = conceptosDB[key];
+                const btn = document.createElement('button');
+                btn.className = 'glossary-btn';
+                btn.textContent = concepto.titulo;
+                btn.dataset.key = key; // Guardar la clave para buscarla luego
+                
+                btn.addEventListener('click', () => {
+                    // Actualizar contenido
+                    const data = conceptosDB[btn.dataset.key];
+                    // Usamos backticks (`) para el string multilinea
+                    content.innerHTML = `<h3>${data.titulo}</h3>${data.html}`;
+                    
+                    // Actualizar estado activo de botones
+                    botones.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                });
+                
+                nav.appendChild(btn);
+                botones.push(btn);
+            }
+        }
+
+        // ======================================================
+        // --- 5. INICIALIZACIÓN DE TODO ---
+        // ======================================================
+        
+        // Inicializar simuladores
+        renderLista();
+        renderFila();
+        
+        // Inicializar glosarios
+        inicializarGlosario('listas-glossary-nav', 'listas-glossary-content', conceptosListas);
+        inicializarGlosario('filas-glossary-nav', 'filas-glossary-content', conceptosFilas);
+
+        // Mensajes iniciales en los paneles de explicación de los simuladores
+        updateListExplanation('Bienvenido al Simulador de Listas', 
+            `<p>Usa los controles para manipular la lista. Aquí aparecerá una explicación de cada operación.</p>
+             <p><strong>¿Qué es una Lista Enlazada?</strong> Una estructura de datos donde los elementos (Nodos) se "enlazan" uno a otro usando punteros.</p>`);
+        
+        updateFilaExplanation('Bienvenido al Simulador de Filas', 
+            `<p>Usa los controles para manipular la fila. Aquí aparecerá una explicación de cada operación.</p>
+             <p><strong>¿Qué es una Fila (Queue)?</strong> Una estructura <strong>FIFO (First-In, First-Out)</strong>. El primero que entra es el primero que sale.</p>`);
+
+    </script>
+
+</body>
+</html>
