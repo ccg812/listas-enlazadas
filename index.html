@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CyberStruct: Explorador Interactivo</title>
+    <title>CyberStruct: Explorador de Listas</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500&display=swap" rel="stylesheet">
 
@@ -32,7 +32,7 @@
             background-color: var(--color-fondo);
             color: var(--color-texto);
             display: flex;
-            flex-direction: column; /* Cambiado para las pestañas */
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
@@ -49,19 +49,19 @@
         /* --- NAVEGACIÓN POR PESTAÑAS --- */
         .tab-nav {
             display: flex;
-            flex-wrap: wrap; /* Para que quepan más pestañas */
-            justify-content: center; /* Centrar pestañas en móvil */
-            margin-bottom: -2px; /* Superponer borde */
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: -2px;
             z-index: 10;
         }
 
         .tab-btn {
             font-family: 'Orbitron', sans-serif;
-            font-size: 1rem; /* Reducido para más pestañas */
+            font-size: 1rem;
             background: var(--color-fondo-panel);
             border: 2px solid #444;
             color: #888;
-            padding: 10px 20px; /* Ajustado */
+            padding: 10px 20px;
             cursor: pointer;
             border-bottom: none;
             border-radius: 10px 10px 0 0;
@@ -75,7 +75,7 @@
             color: var(--color-neon-azul);
             text-shadow: 0 0 5px var(--color-glow);
             transform: translateY(2px);
-            border-bottom: 2px solid var(--color-fondo-panel); /* Ocultar borde inferior */
+            border-bottom: 2px solid var(--color-fondo-panel);
         }
         
         .tab-content {
@@ -89,11 +89,11 @@
 
         /* --- Contenedor Principal --- */
         .container {
-            width: 100%; /* Ajustado para pestañas */
+            width: 100%;
             max-width: 1400px;
             background: var(--color-fondo-panel);
             border: 2px solid var(--color-neon-azul);
-            border-radius: 0 10px 10px 10px; /* Ajustado para pestañas */
+            border-radius: 0 10px 10px 10px;
             box-shadow: 0 0 25px var(--color-glow);
             padding: 25px;
             display: grid;
@@ -103,12 +103,12 @@
         
         /* Contenedor para pestañas de conceptos */
         .concept-container {
-             grid-template-columns: 300px 1fr; /* Columna para botones, otra para explicación */
+             grid-template-columns: 300px 1fr;
         }
 
         /* --- Área de Visualización (Común) --- */
         .visual-panel {
-            grid-column: 1 / -1; /* Ocupa todo el ancho */
+            grid-column: 1 / -1;
             border: 1px dashed var(--color-neon-azul);
             padding: 20px;
             min-height: 200px;
@@ -169,57 +169,8 @@
             margin-left: 10px;
         }
 
-        /* --- Visualización de FILAS (Queues) --- */
-        #fila-visualization-area {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            min-height: 100px;
-            padding: 10px;
-            gap: 10px;
-            border: 2px dashed #444;
-            border-radius: 5px;
-            position: relative;
-        }
-
-        .queue-label {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.2rem;
-            color: var(--color-neon-azul);
-            text-shadow: 0 0 5px var(--color-glow);
-            padding: 5px 10px;
-            border: 1px solid var(--color-neon-azul);
-            border-radius: 5px;
-        }
-        
-        .queue-label.front {
-            margin-right: 10px;
-        }
-        
-        .queue-label.rear {
-            margin-left: 10px;
-        }
-        
-        .queue-item {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.5rem;
-            padding: 15px 20px;
-            color: var(--color-neon-verde);
-            background-color: #2a2a4a;
-            border: 2px solid var(--color-neon-verde);
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-            transition: all 0.5s ease;
-            animation: fadeIn 0.5s ease;
-        }
-        
-        /* Animaciones Fila */
-        .queue-item-out {
-            animation: fadeOut 0.5s ease forwards;
-        }
-
         /* Clases de animación JS (Comunes) */
-        .node-highlight, .item-highlight {
+        .node-highlight {
             transform: scale(1.1);
             background-color: var(--color-neon-azul);
             border-color: var(--color-texto);
@@ -229,7 +180,7 @@
             color: var(--color-fondo);
         }
         
-        .node-found, .item-found {
+        .node-found {
             background-color: var(--color-neon-verde);
             border-color: var(--color-texto);
         }
@@ -247,17 +198,17 @@
         
         /* Panel específico para Glosario */
         .glossary-nav {
-            height: 400px; /* Altura fija */
-            overflow-y: auto; /* Scroll si es necesario */
+            height: 400px;
+            overflow-y: auto;
             display: flex;
             flex-direction: column;
             gap: 10px;
-            padding-right: 10px; /* Espacio para scrollbar */
+            padding-right: 10px;
         }
         
         .glossary-content {
-             height: 400px; /* Altura fija */
-             overflow-y: auto; /* Scroll si es necesario */
+             height: 400px;
+             overflow-y: auto;
         }
         
         .glossary-btn {
@@ -423,15 +374,14 @@
         
         
         /* --- ESTILOS RESPONSIVOS (PARA MÓVILES) --- */
-        /* Esta es la sección que he añadido */
         @media (max-width: 768px) {
             body {
-                padding: 10px; /* Menos espacio en los bordes */
-                font-size: 14px; /* Tamaño de letra base más pequeño */
+                padding: 10px;
+                font-size: 14px;
             }
             
             h1 {
-                font-size: 1.6rem; /* Título un poco más pequeño */
+                font-size: 1.6rem;
                 letter-spacing: 1px;
             }
             
@@ -440,19 +390,17 @@
             }
 
             .container {
-                /* Romper las 2 columnas y apilarlas (1 columna) */
                 grid-template-columns: 1fr; 
                 padding: 15px;
-                gap: 15px; /* Menos espacio entre páneles */
+                gap: 15px;
             }
             
             .concept-container {
-                /* Apilar también el glosario */
                 grid-template-columns: 1fr;
             }
             
             .tab-btn {
-                font-size: 0.85rem; /* Letra de pestañas más pequeña */
+                font-size: 0.85rem;
                 padding: 8px 10px;
             }
             
@@ -460,20 +408,16 @@
                 padding: 15px;
             }
             
-            /* Hacer que los grupos de botones se apilen si no caben */
             .control-group {
                 flex-wrap: wrap;
             }
 
-            /* Ajustar la altura de los paneles del glosario */
             .glossary-nav,
             .explanation-panel.large {
-                height: 300px; /* Más bajo para caber en pantalla */
+                height: 300px;
             }
 
-            /* Reducir texto en nodos para que quepan */
-            .node-data,
-            .queue-item {
+            .node-data {
                 font-size: 1.2rem;
                 padding: 10px 15px;
             }
@@ -492,10 +436,8 @@
 <body>
 
     <nav class="tab-nav">
-        <button class="tab-btn active" data-tab="listas-sim">Listas (Enlazadas)</button>
-        <button class="tab-btn" data-tab="filas-sim">Filas (Enqueue)</button>
+        <button class="tab-btn active" data-tab="listas-sim">Simulador de Listas</button>
         <button class="tab-btn" data-tab="listas-conceptos">Conceptos: Listas</button>
-        <button class="tab-btn" data-tab="filas-conceptos">Conceptos: Filas</button>
     </nav>
 
     <div id="listas-sim-content" class="tab-content active">
@@ -542,50 +484,7 @@
             </div>
         </div>
     </div>
-    
-    <div id="filas-sim-content" class="tab-content">
-        <div class="container">
-            <header style="grid-column: 1 / -1; text-align: center; margin-bottom: 10px;">
-                <h1>CyberQueue: Simulador de Filas</h1>
-            </header>
-
-            <div class="visual-panel">
-                <h2>VISUALIZACIÓN DE LA FILA (FIFO)</h2>
-                <div id="fila-visualization-area">
-                    <span class="null-text">[FILA VACÍA]</span>
-                </div>
-            </div>
-
-            <div class="controls-panel">
-                <h3>OPERACIONES DE FILA</h3>
-                <div class="control-group">
-                    <input type="text" id="fila-value" placeholder="Introduce un valor...">
-                </div>
-                <div class="control-group" style="flex-wrap: wrap;">
-                    <button id="enqueue-btn">Encolar (Enqueue)</button>
-                    <button id="dequeue-btn" class="danger">Desencolar (Dequeue)</button>
-                </div>
-                 <div class="control-group" style="margin-top: 20px;">
-                    <button id="clear-fila-btn" class="danger" style="width: 100%;">Limpiar Fila</button>
-                </div>
-            </div>
-
-            <div class="info-panel">
-                <h3>CONSOLA DE OPERACIONES</h3>
-                <div id="fila-console-output" class="console-output">
-                    <div class="log-entry">Bienvenido al Simulador de Filas.</div>
-                </div>
-            </div>
-            
-            <div class="info-panel" style="grid-column: 1 / -1;">
-                <h3>CENTRO DE APRENDIZAJE: ¿Qué está pasando?</h3>
-                <div id="fila-explanation-panel" class="explanation-panel">
-                    <p>Usa los controles para manipular la fila. Aquí aparecerá una explicación de cada operación.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    
+        
     <div id="listas-conceptos-content" class="tab-content">
         <div class="container concept-container">
             <header style="grid-column: 1 / -1; text-align: center; margin-bottom: 10px;">
@@ -606,28 +505,6 @@
             </div>
         </div>
     </div>
-    
-    <div id="filas-conceptos-content" class="tab-content">
-        <div class="container concept-container">
-            <header style="grid-column: 1 / -1; text-align: center; margin-bottom: 10px;">
-                <h1>Glosario Interactivo: Filas (Queues)</h1>
-            </header>
-            
-            <div class="info-panel">
-                <h3>Conceptos Clave</h3>
-                <nav id="filas-glossary-nav" class="glossary-nav">
-                    </nav>
-            </div>
-            
-            <div class="info-panel">
-                 <h3>Definición y Aplicación</h3>
-                 <div id="filas-glossary-content" class="explanation-panel large glossary-content">
-                     <p>Haz clic en un concepto de la izquierda para ver su definición, ventajas y casos de uso aquí.</p>
-                 </div>
-            </div>
-        </div>
-    </div>
-
 
     <script>
         /* --- LÓGICA JAVASCRIPT (La Interactividad) --- */
@@ -990,183 +867,10 @@
         });
 
         // ======================================================
-        // --- 3. LÓGICA DE FILAS (SIMULADOR) ---
-        // ======================================================
-
-        // --- 3.1. Definición de las Estructuras de Datos (Fila) ---
-        class Fila {
-            constructor() {
-                this.items = []; // Usamos un array simple para la implementación
-            }
-            
-            // Añadir al final (rear)
-            enqueue(data) {
-                this.items.push(data);
-            }
-            
-            // Quitar del inicio (front)
-            dequeue() {
-                if (this.isEmpty()) {
-                    return null;
-                }
-                return this.items.shift();
-            }
-            
-            // Ver el primer elemento
-            peek() {
-                if (this.isEmpty()) {
-                    return null;
-                }
-                return this.items[0];
-            }
-            
-            isEmpty() {
-                return this.items.length === 0;
-            }
-            
-            size() {
-                return this.items.length;
-            }
-        }
-
-        // --- 3.2. Lógica de la Interfaz (DOM Fila) ---
-        const miFila = new Fila();
-        const filaVisArea = document.getElementById('fila-visualization-area');
-        const filaInput = document.getElementById('fila-value');
-        const enqueueBtn = document.getElementById('enqueue-btn');
-        const dequeueBtn = document.getElementById('dequeue-btn');
-        const clearFilaBtn = document.getElementById('clear-fila-btn');
-        const filaConsoleOutput = document.getElementById('fila-console-output');
-        const filaExplanationPanel = document.getElementById('fila-explanation-panel');
-
-        function toggleFilaButtons(disabled) {
-            enqueueBtn.disabled = disabled;
-            dequeueBtn.disabled = disabled;
-            clearFilaBtn.disabled = disabled;
-        }
-
-        function renderFila() {
-            filaVisArea.innerHTML = '';
-            if (miFila.isEmpty()) {
-                filaVisArea.innerHTML = '<span class="null-text">[FILA VACÍA]</span>';
-                return;
-            }
-            
-            // Añadir etiqueta "Frente"
-            const frontLabel = document.createElement('span');
-            frontLabel.className = 'queue-label front';
-            frontLabel.textContent = 'FRENTE (Sale de aquí)';
-            filaVisArea.appendChild(frontLabel);
-
-            // Añadir items
-            miFila.items.forEach((item, index) => {
-                const itemDiv = document.createElement('div');
-                itemDiv.className = 'queue-item';
-                itemDiv.id = `item-${index}`;
-                itemDiv.textContent = item;
-                filaVisArea.appendChild(itemDiv);
-            });
-            
-            // Añadir etiqueta "Final"
-            const rearLabel = document.createElement('span');
-            rearLabel.className = 'queue-label rear';
-            rearLabel.textContent = 'FINAL (Entra por aquí)';
-            filaVisArea.appendChild(rearLabel);
-        }
-
-        function logToFilaConsole(message, type = 'log') {
-            const entry = document.createElement('div');
-            entry.className = type === 'error' ? 'log-entry log-error' : 'log-entry';
-            entry.textContent = message;
-            filaConsoleOutput.appendChild(entry);
-            filaConsoleOutput.scrollTop = filaConsoleOutput.scrollHeight;
-        }
-
-        function updateFilaExplanation(title, content) {
-            filaExplanationPanel.innerHTML = `<h3>${title}</h3>${content}`;
-        }
-        
-        function getFilaValor() {
-            const valor = filaInput.value.trim();
-            if (valor === '') {
-                logToFilaConsole('Error: El valor no puede estar vacío.', 'error');
-                updateFilaExplanation('Error de Entrada', '<p>Debes introducir un valor en la caja de texto para realizar esta operación.</p>');
-                return null;
-            }
-            return valor;
-        }
-
-        enqueueBtn.addEventListener('click', () => {
-            const valor = getFilaValor();
-            if (valor === null) return;
-            
-            miFila.enqueue(valor);
-            renderFila();
-            
-            // Pequeña animación
-            const nuevoItem = filaVisArea.querySelector(`#item-${miFila.size() - 1}`);
-            if(nuevoItem) {
-                nuevoItem.classList.add('item-highlight');
-                setTimeout(() => nuevoItem.classList.remove('item-highlight'), 1000);
-            }
-
-            logToFilaConsole(`Valor "${valor}" añadido al FINAL (Enqueued).`);
-            updateFilaExplanation(
-                'Operación: Encolar (Enqueue)',
-                `<p>Se ha añadido el elemento <strong>${valor}</strong> al <strong>final</strong> de la fila.</p>
-                 <p>En nuestra implementación con un Array, esto es una operación <code>push()</code>.</p>
-                 <p>Esta operación es muy rápida, <strong>O(1)</strong>.</p>`
-            );
-            filaInput.value = '';
-        });
-        
-        dequeueBtn.addEventListener('click', async () => {
-            toggleFilaButtons(true);
-            if (miFila.isEmpty()) {
-                logToFilaConsole('Error: La fila está vacía. No se puede desencolar.', 'error');
-                updateFilaExplanation('Error: Fila Vacía', '<p>No se puede eliminar un elemento porque la fila ya está vacía (Underflow).</p>');
-                toggleFilaButtons(false);
-                return;
-            }
-
-            // Animar el elemento que sale
-            const itemSaliendo = filaVisArea.querySelector('#item-0');
-            if (itemSaliendo) {
-                itemSaliendo.classList.add('queue-item-out');
-                logToFilaConsole(`Elemento "${miFila.peek()}" saliendo del FRENTE...`);
-                await sleep(500); // Esperar que termine la animación
-            }
-            
-            const valor = miFila.dequeue();
-            renderFila();
-            logToFilaConsole(`Elemento "${valor}" ha sido eliminado del FRENTE (Dequeued).`);
-            updateFilaExplanation(
-                'Operación: Desencolar (Dequeue)',
-                `<p>Se ha eliminado el elemento <strong>${valor}</strong> del <strong>frente</strong> de la fila.</p>
-                 <p>Este era el primer elemento que entró (principio <strong>FIFO</strong>).</p>
-                 <p>En nuestra implementación con un Array, esto es una operación <code>shift()</code>.</p>
-                 <p><strong>Nota:</strong> En un Array, <code>shift()</code> puede ser lento (<strong>O(n)</strong>) porque debe re-indexar todos los demás elementos. En una Fila implementada con Listas Enlazadas, esta operación sería <strong>O(1)</strong>.</p>`
-            );
-            
-            toggleFilaButtons(false);
-        });
-        
-        clearFilaBtn.addEventListener('click', () => {
-            miFila.items = [];
-            renderFila();
-            logToFilaConsole('¡Fila borrada!');
-            updateFilaExplanation(
-                'Operación: Limpiar Fila',
-                `<p>Se ha vaciado la fila. Todos los elementos han sido eliminados.</p>`
-            );
-        });
-
-        // ======================================================
         // --- 4. LÓGICA DE GLOSARIOS INTERACTIVOS ---
         // ======================================================
 
         // --- 4.1. Base de Datos de Conceptos (Listas) ---
-        // ¡CONTENIDO EXPANDIDO!
         const conceptosListas = {
             'ventaja_memoria': {
                 titulo: 'Ventaja: Gestión Dinámica de Memoria',
@@ -1371,220 +1075,6 @@
             },
         };
         
-        // --- 4.2. Base de Datos de Conceptos (Filas) ---
-        // ¡CONTENIDO EXPANDIDO!
-         const conceptosFilas = {
-             'fifo': {
-                 titulo: 'Principio: FIFO (First-In, First-Out)',
-                 html: `
-                    <p>Es la regla fundamental de todas las Filas (Queues). Significa <strong>"El Primero en Entrar, es el Primero en Salir"</strong>.</p>
-                    
-                    <h3>Definición Detallada</h3>
-                    <p>En una Fila, los elementos solo pueden ser añadidos por un extremo (el <strong>Final</strong> o <code>Rear</code>) y solo pueden ser eliminados por el otro extremo (el <strong>Frente</strong> o <code>Front</code>).</p>
-                    <p>Esto garantiza que los elementos se procesan exactamente en el orden en que llegaron. No se puede "colar" nadie.</p>
-                    
-                    <h3>Analogía</h3>
-                    <p>Es exactamente como una fila en el mundo real: una cola para pagar en el supermercado, una fila de coches en un semáforo, o una fila para comprar entradas. La primera persona que se forma es la primera persona en ser atendida.</p>
-                    
-                    <h3>Contraste: LIFO (Pilas)</h3>
-                    <p>Lo opuesto es <strong>LIFO (Last-In, First-Out)</strong>, "El Último en Entrar, es el Primero en Salir". Este es el principio de las <strong>Pilas (Stacks)</strong>, como una pila de platos: el último plato que pones encima es el primero que quitas.</p>
-                 `
-             },
-             'enqueue': {
-                 titulo: 'Operación: Enqueue (Encolar)',
-                 html: `
-                    <p>Es la operación para <strong>añadir</strong> un elemento a la Fila.</p>
-                    
-                    <h3>Definición Detallada</h3>
-                    <p>La operación <code>enqueue</code> siempre añade el nuevo elemento al <strong>final</strong> de la fila (también llamado <code>Rear</code> o <code>Tail</code>).</p>
-                    
-                    <h3>Complejidad (Big O)</h3>
-                    <p>Esta operación casi siempre es muy rápida, con una complejidad de <strong>O(1)</strong> (Tiempo Constante).</p>
-                    <ul>
-                        <li><strong>En un Array:</strong> La operación <code>push()</code> añade al final en O(1).</li>
-                        <li><strong>En una Lista Enlazada:</strong> Si se mantiene un puntero <code>tail</code> (como se debería), añadir al final también es O(1).</li>
-                    </ul>
-                 `
-             },
-             'dequeue': {
-                 titulo: 'Operación: Dequeue (Desencolar)',
-                 html: `
-                    <p>Es la operación para <strong>eliminar</strong> un elemento de la Fila.</p>
-                    
-                    <h3>Definición Detallada</h3>
-                    <p>La operación <code>dequeue</code> siempre elimina y devuelve el elemento que está al <strong>frente</strong> de la fila (también llamado <code>Front</code> o <code>Head</code>).</p>
-                    <p>Este es el elemento que ha estado en la fila por más tiempo, respetando el principio FIFO.</p>
-                    
-                    <h3>Complejidad (Big O)</h3>
-                    <p>La complejidad <strong>depende críticamente de la implementación</strong>:</p>
-                    <ul>
-                        <li><strong>En una Lista Enlazada:</strong> Eliminar el <code>head</code> es una simple reasignación de puntero (<code>head = head.next</code>). Es <strong>O(1)</strong>.</li>
-                        <li><strong>En un Array (¡Lento!):</strong> La operación <code>shift()</code> (como en nuestro simulador) elimina el primer elemento, pero luego debe <strong>re-indexar todos los demás elementos</strong> moviéndolos una posición a la izquierda. Esto es <strong>O(n)</strong> y es muy ineficiente para filas grandes.</li>
-                    </ul>
-                 `
-             },
-             'front_rear': {
-                 titulo: 'Concepto: Front y Rear (Frente y Final)',
-                 html: `
-                    <p>Son los dos punteros, índices o referencias que la estructura de la Fila necesita para operar.</p>
-                    
-                    <h3>Front (o Head)</h3>
-                    <p>Apunta al <strong>inicio</strong> o "frente" de la fila. Es la posición del próximo elemento que será eliminado por <code>dequeue</code>. Es el elemento "más viejo".</p>
-                    
-                    <h3>Rear (o Tail)</h3>
-                    <p>Apunta al <strong>final</strong> de la fila. Es la posición donde se añadirá el próximo elemento en una operación <code>enqueue</code>. Es el elemento "más nuevo".</p>
-                    
-                    <p>En una implementación de array, <code>Front</code> podría ser siempre el índice <code>0</code>, mientras que <code>Rear</code> sería <code>array.length - 1</code>. En una implementación de lista enlazada, <code>Front</code> es el puntero <code>head</code> y <code>Rear</code> es el puntero <code>tail</code>.</p>
-                 `
-             },
-             'underflow': {
-                 titulo: 'Condición de Error: Underflow (Subdesbordamiento)',
-                 html: `
-                    <p>Es un error común que ocurre al intentar operar en una fila vacía.</p>
-                    
-                    <h3>Definición Detallada</h3>
-                    <p>Ocurre cuando intentas realizar una operación <code>dequeue</code> (desencolar) o <code>peek</code> (ver el frente) en una <strong>fila que ya está vacía</strong>.</p>
-                    <p>No hay ningún elemento para eliminar o ver, por lo que el programa entra en un estado de error.</p>
-                    
-                    <h3>Manejo de Errores</h3>
-                    <p>Un buen programa siempre debe comprobar si la fila está vacía <strong>antes</strong> de intentar desencolar. En JavaScript, esto se hace con una propiedad como <code>.length === 0</code> o un método <code>.isEmpty()</code>.</p>
-                    <code>
-                        if (miFila.isEmpty()) {<br>
-                        &nbsp;&nbsp;// Mostrar error, no hacer nada<br>
-                        } else {<br>
-                        &nbsp;&nbsp;miFila.dequeue();<br>
-                        }
-                    </code>
-                 `
-             },
-             'overflow': {
-                 titulo: 'Condición de Error: Overflow (Desbordamiento)',
-                 html: `
-                    <p>Este error ocurre solo en <strong>filas de tamaño fijo</strong> (o "acotadas").</p>
-                    
-                    <h3>Definición Detallada</h3>
-                    <p>Ocurre cuando intentas realizar una operación <code>enqueue</code> (encolar) en una <strong>fila que ya está llena</strong> (ha alcanzado su capacidad máxima).</p>
-                    
-                    <h3>Aplicación</h3>
-                    <p>Esto no suele ser un problema en JavaScript (como en nuestro simulador), porque los Arrays de JavaScript crecen dinámicamente: solo se produce un "overflow" si te acabas toda la memoria RAM del sistema.</p>
-                    <p>Sin embargo, en lenguajes como C, C++ o Java, es muy común crear filas (especialmente "Filas Circulares") basadas en un array de tamaño fijo (ej. <code>new Fila(100)</code>). En ese caso, debes comprobar <code>isFull()</code> antes de encolar.</p>
-                 `
-             },
-             'impl_array': {
-                 titulo: 'Implementación: Con Arrays',
-                 html: `
-                    <p>Una forma simple de crear una Fila, pero con una gran desventaja de rendimiento.</p>
-                    <ul>
-                        <li><strong>Enqueue:</strong> Se usa la operación <code>push()</code> para añadir al final del array. Esto es rápido: <strong>O(1)</strong>.</li>
-                        <li><strong>Dequeue:</strong> Se usa la operación <code>shift()</code> para quitar del inicio del array. Esto es lento: <strong>O(n)</strong>.</li>
-                    </ul>
-                    
-                    <h3>Desventaja</h3>
-                    <p>La operación <code>shift()</code> es el problema. En un array de 1,000,000 de elementos, <code>shift()</code> elimina el primero y luego debe mover los 999,999 restantes una posición a la izquierda. Esto es inaceptable para aplicaciones de alto rendimiento.</p>
-                    
-                    <h3>Optimización: Fila Circular (Ring Buffer)</h3>
-                    <p>Se puede implementar una Fila <strong>O(1)</strong> usando un Array de tamaño fijo, pero de forma más inteligente. Se usan dos índices (<code>front</code> y <code>rear</code>) que "dan la vuelta" al array usando aritmética modular (<code>%</code>). Esto evita la operación <code>shift()</code> y es extremadamente rápido, pero es más complejo de programar.</p>
-                 `
-             },
-             'impl_lista': {
-                 titulo: 'Implementación: Con Listas Enlazadas',
-                 html: `
-                    <p>Esta es la implementación <strong>más eficiente y estándar</strong> para una Fila en la teoría.</p>
-                    
-                    <h3>Definición Detallada</h3>
-                    <p>Se usa una Lista Enlazada, manteniendo <strong>dos punteros</strong>:</p>
-                    <ul>
-                        <li>Un puntero <code>head</code> (el <code>front</code> de la fila).</li>
-                        <li>Un puntero <code>tail</code> (el <code>rear</code> de la fila).</li>
-                    </ul>
-                    
-                    <h3>Complejidad O(1)</h3>
-                    <p>Tener ambos punteros es la clave:</p>
-                    <ul>
-                        <li><strong>Enqueue (O(1)):</strong> Se añade un nuevo nodo al final usando el puntero <code>tail</code> y luego se actualiza <code>tail</code>. (3 pasos).</li>
-                        <li><strong>Dequeue (O(1)):</strong> Se elimina el nodo <code>head</code> y se actualiza <code>head</code> para que apunte a <code>head.next</code>. (2 pasos).</li>
-                    </ul>
-                    
-                    <h3>Ventaja vs. Desventaja</h3>
-                    <p><strong>Ventaja:</strong> Todas las operaciones clave son <strong>O(1)</strong>, haciéndola extremadamente rápida sin importar el tamaño.</p>
-                    <p><strong>Desventaja:</strong> Tiene el "overhead" de memoria de los punteros (ver glosario de listas).</p>
-                 `
-             },
-             'aplicacion_impresora': {
-                 titulo: 'Aplicación: Cola de Impresión (Spooling)',
-                 html: `
-                    <p>El ejemplo más clásico de una Fila.</p>
-                    
-                    <h3>Funcionamiento</h3>
-                    <p>Cuando varias personas en una oficina envían documentos a la misma impresora, la impresora no puede imprimirlos todos a la vez. El sistema operativo crea una <strong>Fila</strong> (llamada "spool" de impresión).</p>
-                    <ol>
-                        <li>Usuario A envía <code>doc1.pdf</code>. (<code>enqueue(doc1)</code>)</li>
-                        <li>Usuario B envía <code>doc2.jpg</code>. (<code>enqueue(doc2)</code>)</li>
-                        <li>Usuario A envía <code>doc3.txt</code>. (<code>enqueue(doc3)</code>)</li>
-                    </ol>
-                    <p>La impresora, cuando está lista, ejecuta <code>dequeue()</code>, obtiene <code>doc1.pdf</code> y lo imprime. Luego, <code>dequeue()</code> de nuevo y obtiene <code>doc2.jpg</code>. El orden FIFO asegura que todo sea justo.</p>
-                 `
-             },
-             'aplicacion_bfs': {
-                 titulo: 'Aplicación: Búsqueda en Amplitud (BFS)',
-                 html: `
-                    <p>Una aplicación fundamental en algoritmos de grafos, inteligencia artificial y para encontrar caminos más cortos.</p>
-                    
-                    <h3>Definición Detallada</h3>
-                    <p>BFS (Breadth-First Search) es un algoritmo para explorar un árbol o un grafo "por niveles". Utiliza una Fila para llevar un registro de los nodos que debe visitar.</p>
-                    
-                    <h3>Funcionamiento (Analogía)</h3>
-                    <p>Imagina que estás en el centro de un laberinto (el nodo raíz). Quieres encontrar la salida.</p>
-                    <ol>
-                        <li>Pones tu posición inicial en la Fila.</li>
-                        <li>Mientras la Fila no esté vacía:</li>
-                        <li>Sacas (<code>dequeue</code>) una ubicación ('A').</li>
-                        <li>Miras <strong>todos</strong> los pasillos directamente conectados a 'A' (sus "vecinos": 'B', 'C', 'D').</li>
-                        <li>Pones (<code>enqueue</code>) a 'B', 'C' y 'D' en la Fila.</li>
-                    </ol>
-                    <p>El principio <strong>FIFO</strong> de la Fila asegura que explores todos los pasillos a 1 paso de distancia, luego todos los pasillos a 2 pasos, luego a 3 pasos... De esta forma, el primer camino que encuentres hacia la salida será, por definición, el <strong>camino más corto</strong>.</p>
-                 `
-             },
-             'aplicacion_buffer': {
-                 titulo: 'Aplicación: Búfer de Datos (Streaming)',
-                 html: `
-                    <p>Las Filas son esenciales para gestionar flujos de datos (streaming) y resolver el "Problema del Productor-Consumidor".</p>
-                    
-                    <h3>Ejemplo: Video de YouTube</h3>
-                    <p>Cuando ves un video, hay dos procesos ocurriendo:</p>
-                    <ol>
-                        <li><strong>El Productor:</strong> Tu conexión a internet descarga los próximos segundos del video.</li>
-                        <li><strong>El Consumidor:</strong> Tu reproductor de video "consume" esos datos y los muestra en pantalla.</li>
-                    </ol>
-                    <p>El Productor (internet) puede ser rápido o lento. El Consumidor (video) es constante (ej. 30 fotogramas/seg). La <strong>Fila (búfer)</strong> actúa como el "colchón" entre ellos.</p>
-                    
-                    <h3>Funcionamiento</h3>
-                    <p>El Productor (internet) añade (<code>enqueue</code>) datos al final del búfer. El Consumidor (reproductor) saca (<code>dequeue</code>) datos del frente del búfer.</p>
-                    <p>Si tu internet es rápido, el búfer se llena (la barra gris avanza). Si tu internet se pausa, el reproductor sigue consumiendo del búfer. El video solo se congela si el Consumidor intenta hacer <code>dequeue</code> de un búfer vacío (Underflow).</p>
-                 `
-             },
-             'cola_prioridad': {
-                 titulo: 'Tipo: Cola de Prioridad (Priority Queue)',
-                 html: `
-                    <p>Una variación importante de la Fila donde el orden FIFO <strong>no se respeta</strong>.</p>
-                    
-                    <h3>Definición Detallada</h3>
-                    <p>En una Cola de Prioridad, cada elemento que entra (<code>enqueue</code>) tiene asignada una <strong>prioridad</strong> (ej. un número).</p>
-                    <p>La operación <code>dequeue</code> <strong>ignora</strong> quién llegó primero. En su lugar, busca y elimina al elemento con la <strong>prioridad más alta</strong> de toda la cola.</p>
-                    
-                    <h3>Analogía</h3>
-                    <p>Una sala de emergencias de un hospital. No atienden por orden de llegada (FIFO). Atienden por gravedad (prioridad).</p>
-                    <ul>
-                        <li>1:00 PM: Llega Paciente A (resfriado, prioridad 1).</li>
-                        <li>1:15 PM: Llega Paciente B (ataque al corazón, prioridad 10).</li>
-                    </ul>
-                    <p>El doctor (<code>dequeue</code>) atenderá primero al Paciente B, aunque haya llegado después.</p>
-                    
-                    <h3>Implementación</h3>
-                    <p>No se implementan con Listas Enlazadas (sería O(n) para encontrar la prioridad más alta). Se implementan con una estructura de árbol especializada llamada <strong>Heap (Montículo)</strong>, que hace que ambas operaciones (<code>enqueue</code> y <code>dequeue</code>) sean muy rápidas (<strong>O(log n)</strong>).</p>
-                 `
-             },
-         };
 
         // --- 4.3. Función Genérica para crear Glosarios ---
         
@@ -1630,22 +1120,16 @@
         // --- 5. INICIALIZACIÓN DE TODO ---
         // ======================================================
         
-        // Inicializar simuladores
+        // Inicializar simulador
         renderLista();
-        renderFila();
         
-        // Inicializar glosarios
+        // Inicializar glosario
         inicializarGlosario('listas-glossary-nav', 'listas-glossary-content', conceptosListas);
-        inicializarGlosario('filas-glossary-nav', 'filas-glossary-content', conceptosFilas);
 
-        // Mensajes iniciales en los paneles de explicación de los simuladores
+        // Mensaje inicial en el panel de explicación del simulador
         updateListExplanation('Bienvenido al Simulador de Listas', 
             `<p>Usa los controles para manipular la lista. Aquí aparecerá una explicación de cada operación.</p>
              <p><strong>¿Qué es una Lista Enlazada?</strong> Una estructura de datos donde los elementos (Nodos) se "enlazan" uno a otro usando punteros.</p>`);
-        
-        updateFilaExplanation('Bienvenido al Simulador de Filas', 
-            `<p>Usa los controles para manipular la fila. Aquí aparecerá una explicación de cada operación.</p>
-             <p><strong>¿Qué es una Fila (Queue)?</strong> Una estructura <strong>FIFO (First-In, First-Out)</strong>. El primero que entra es el primero que sale.</p>`);
 
     </script>
 
